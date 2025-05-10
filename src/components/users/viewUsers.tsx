@@ -15,7 +15,6 @@ import toast from "react-hot-toast";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { LoadingSpinner } from "../ui/custom/spinner";
-import { Badge } from "../ui/badge";
 import { MailPlus } from "lucide-react";
 import PaginationNavigator from "../ui/custom/paginationNavigator";
 type searchDataType = {

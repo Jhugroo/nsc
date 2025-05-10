@@ -1,6 +1,5 @@
 import { createTRPCRouter } from "@/server/api/trpc";
 import { userRouter } from "./routers/user";
-import { dateRouter } from "./routers/date";
 import { locationRouter } from "./routers/location";
 import { eventRouter } from "./routers/event";
 
@@ -11,7 +10,6 @@ import { eventRouter } from "./routers/event";
  */
 export const appRouter = createTRPCRouter({
   user: userRouter,
-  date: dateRouter,
   event: eventRouter,
   location: locationRouter,
 });

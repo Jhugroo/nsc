@@ -38,7 +38,7 @@ export default function CreateEvent(updateData: {
                 eventDate: (updateEventQuery.eventDate).getTime(),
                 location: updateEventQuery.location,
                 description: updateEventQuery.description,
-                link: updateEventQuery.link
+                link: updateEventQuery.link ?? ''
             })
         }
     }, [updateEventQuery, updateData.id])

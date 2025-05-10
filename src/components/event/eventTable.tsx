@@ -53,6 +53,8 @@ export default function EventTable() {
         </>
     )
 }
+
+
 function CreateEditEventDialog({ refetch, eventId }: { eventId?: string, refetch?: () => void }) {
     const typeString: string = eventId ? "Update" : "Create new"
     return <Dialog>

@@ -14,7 +14,6 @@ import {
   type LucideIcon,
   Menu,
   Users,
-  DollarSign,
   Shield,
   Blocks,
   CalendarCheck2Icon
@@ -27,9 +26,13 @@ export const adminLinks = [
   { link: "/view-users", Icon: Users, text: "Users" },
   { link: "/event", Icon: CalendarCheck2Icon, text: "Events" },
 ]
-const verifiedLinks = [
+const verifiedLinks: {
+  link: string;
+  Icon: LucideIcon;
+  text: string;
+}[] = [
 
-]
+  ]
 
 export function MainMenu() {
   const [isOpen, setIsOpen] = useState(false);

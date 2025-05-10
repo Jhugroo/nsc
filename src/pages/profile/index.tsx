@@ -25,7 +25,7 @@ type userType = {
     email: string | null;
     isAdmin: boolean;
     isVerified: boolean;
-    emailVerified: boolean;
+    emailVerified: Date | null;
     image: string | null;
     phone: string | null;
     verificationRequested: boolean;
