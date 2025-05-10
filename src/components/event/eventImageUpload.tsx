@@ -1,0 +1,83 @@
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { UploadButton } from "@/utils/uploadthing";
+import Image from "next/image";
+import { LoadingSpinner } from "../ui/custom/spinner";
+import toast from 'react-hot-toast';
+import { Button } from "@/components/ui/button"
+import { api } from "@/utils/api"
+import { Badge } from "../ui/badge";
+type imageType = {
+    id: string;
+    key: string;
+    name: string;
+    url: string;
+    type: string | null;
+    eventId: string | null;
+    createdById: string;
+}
+export function EventUploadImage({ id }: {
+    id: string,
+}) {
+    const { data: images, refetch } = api.event.getById.useQuery({ id: id });
+
+    const uploadImage = api.event.addImageToEvent.useMutation({
+        onSuccess: () => {
+            toast.success("Image added successfully")
+            refetch && void refetch()
+        },
+    })
+
+    return <Dialog>
+        <DialogTrigger asChild>
+            <Button variant="secondary" >Images</Button>
+        </DialogTrigger>
+        <DialogContent className="min-w-full  max-h-screen overflow-auto">
+            <DialogHeader>
+                <DialogTitle className="text-left">
+                    <h1 className="text-2xl font-bold">Upload Images</h1>
+                    <p className="text-sm text-muted-foreground">Upload images for event <Badge variant="secondary">{images?.title}</Badge></p>
+                </DialogTitle>
+            </DialogHeader>
+            {images?.image ? <ImageList images={images.image as imageType[]} refetch={refetch} /> : <LoadingSpinner />}
+            <UploadButton
+                endpoint="imageUploader"
+                onClientUploadComplete={(res) => {
+                    id !== undefined &&
+                        uploadImage.mutate({ id: id, files: res.map(({ key, name, url, type }) => { return { key: key, name: name, url: url, type: type } }) })
+                }}
+                onUploadError={(error: Error) => {
+                    alert(`ERROR! ${error.message}`);
+                }}
+            />
+        </DialogContent>
+    </Dialog>
+
+}
+function ImageList({ images, refetch }: {
+    refetch?: () => void,
+    images?: imageType[],
+}) {
+    const deleteImage = api.event.deleteImage.useMutation({
+        onSuccess: () => {
+            toast.success("Image deleted")
+            refetch && void refetch()
+        }
+    })
+    return <section className="grid grid-cols-1 gap-6 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:p-6">
+        {images?.map((image) => {
+            return <div key={image.key} className="relative overflow-hidden transition-transform duration-300 ease-in-out rounded-lg shadow-lg group hover:shadow-xl hover:-translate-y-2" >
+                <Button variant="destructive" onClick={() => deleteImage.mutate({ id: image.id, key: image.key })} className="relative position top-9 float-right m-0 p-1 px-2 ">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-circle-x"><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" /></svg></Button>
+                <Image
+                    src={image.url}
+                    alt={image.name}
+                    width="400"
+                    height="300"
+                    className="object-cover w-full h-64"
+                    style={{ aspectRatio: "400/300", objectFit: "cover" }}
+                />
+            </div>
+        }
+        )}
+    </section >
+}
