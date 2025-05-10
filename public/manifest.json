@@ -1,0 +1,47 @@
+{
+  "name": "NSC",
+  "short_name": "NSC",
+  "description": "Catering services",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "black",
+  "orientation": "portrait",
+  "screenshots": [
+    {
+      "src": "favicon.png",
+      "sizes": "1280x720",
+      "platform": "wide",
+      "label": "NSC"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "1280x720",
+      "platform": "wide",
+      "label": "NSC"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "600x400",
+      "label": "NSC"
+    }
+  ],
+  "icons": [
+    {
+      "src": "square.png",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/png"
+    }
+  ],
+  "scope": "/",
+  "lang": "en-US",
+  "dir": "ltr",
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "display_override": [],
+  "serviceworker": {
+    "src": "/service-worker.js",
+    "scope": "/",
+    "type": "module"
+  }
+}
