@@ -137,7 +137,7 @@ export const departmentPageRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session.user?.isAdmin) {
+      if (!ctx.session.user?.isVerified) {
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
       const images = await ctx.db.image.findMany({
@@ -155,7 +155,7 @@ export const departmentPageRouter = createTRPCRouter({
   deleteImage: protectedProcedure
     .input(z.object({ id: z.string(), key: z.string() }))
     .mutation(async ({ ctx, input: { id, key } }) => {
-      if (!ctx.session.user?.isAdmin)
+      if (!ctx.session.user?.isVerified)
         throw new TRPCError({ code: "UNAUTHORIZED" });
 
       void utapi.deleteFiles(key);
@@ -176,7 +176,7 @@ export const departmentPageRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input: { id, files } }) => {
-      if (!ctx.session.user?.isAdmin)
+      if (!ctx.session.user?.isVerified)
         throw new TRPCError({ code: "UNAUTHORIZED" });
 
       return await ctx.db.departmentPage.update({
