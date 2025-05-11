@@ -13,6 +13,7 @@ import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import CreateEvent from "./create";
 import { EventUploadImage } from "./eventImageUpload";
+import { dateFormatterDisplay } from "@/lib/utils";
 
 export default function EventTable() {
     const { data: event, isLoading, refetch } = api.event.get.useQuery()
@@ -33,6 +34,7 @@ export default function EventTable() {
                 <TableHeader>
                     <TableRow>
                         <TableHead >Title</TableHead>
+                        <TableHead >Event Date</TableHead>
                         <TableHead >Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -40,6 +42,7 @@ export default function EventTable() {
                     {!isLoading && event?.map((singleEvent) => (
                         <TableRow key={singleEvent.id}>
                             <TableCell className="font-medium">{singleEvent.title}</TableCell>
+                            <TableCell className="font-medium">{dateFormatterDisplay(singleEvent.eventDate)}</TableCell>
                             <TableCell className="font-medium space-x-2">
                                 <CreateEditEventDialog refetch={refetch} eventId={singleEvent.id} />
                                 <EventUploadImage id={singleEvent.id} />
