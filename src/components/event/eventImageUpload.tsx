@@ -72,7 +72,6 @@ function ImageList({ images, refetch, eventId }: {
     eventId: string
 }) {
     const { data: image } = api.event.getById.useQuery({ id: eventId });
-    console.log(image)
     const deleteImage = api.event.deleteImage.useMutation({
         onSuccess: () => {
             toast.success("Image deleted")

@@ -5,34 +5,34 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { api } from "@/utils/api"
 import type * as DialogPrimitive from "@radix-ui/react-dialog"
-type createlocationType = { id: number; code: string; label: string }
-const initialiselocation: createlocationType = { id: -1, code: '', label: '' };
+type createdepartmentType = { id: string; code: string; label: string }
+const initialiseDepartment: createdepartmentType = { id: '', code: '', label: '' };
 
-export default function CreateLocation(updateData: {
-    id?: number, refetcher?: () => void,
+export default function CreateDepartment(updateData: {
+    id?: string, refetcher?: () => void,
     CloseTrigger: React.ForwardRefExoticComponent<DialogPrimitive.DialogTriggerProps & React.RefAttributes<HTMLButtonElement>>
 }) {
-    const { data: updatelocationQuery } = api.location.getById.useQuery({ id: updateData.id });
-    const [data, setData] = useState(initialiselocation)
+    const { data: updatedDepartmentQuery } = api.department.getById.useQuery({ id: updateData.id });
+    const [data, setData] = useState(initialiseDepartment)
     useEffect(() => {
-        if (updatelocationQuery?.id) {
-            setData(updatelocationQuery)
+        if (updatedDepartmentQuery?.id) {
+            setData(updatedDepartmentQuery)
         }
-    }, [updatelocationQuery])
-    const createlocation = api.location.create.useMutation({
-        onSuccess: (createdlocation) => {
-            setData(initialiselocation)
+    }, [updatedDepartmentQuery])
+    const createdepartment = api.department.create.useMutation({
+        onSuccess: (createdDepartment) => {
+            setData(initialiseDepartment)
             updateData.refetcher ? void updateData.refetcher() : null;
-            toast.success('location monitoring type ' + createdlocation.label + ' created successfully')
+            toast.success('department ' + createdDepartment.label + ' created successfully')
         },
         onError: () => {
-            toast.error("location monitoring type could not be created, please fill out all fields correctly")
+            toast.error("department could not be created, please fill out all fields correctly")
         }
     });
-    const updatelocation = api.location.updateById.useMutation({
-        onSuccess: (updatedlocation) => {
+    const updatedepartment = api.department.updateById.useMutation({
+        onSuccess: (updateddepartment) => {
             updateData.refetcher ? void updateData.refetcher() : null;
-            toast.success('location monitoring type' + updatedlocation.label + ' updated successfully')
+            toast.success('department ' + updateddepartment.label + ' updated successfully')
         }
     })
     const updateDataFields = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
@@ -42,11 +42,11 @@ export default function CreateLocation(updateData: {
         })
     }
     function save() {
-        if (data.id > -1) {
-            updatelocation.mutate(data);
+        if (data.id.length > 0) {
+            updatedepartment.mutate(data);
         }
         else {
-            createlocation.mutate(data);
+            createdepartment.mutate(data);
         }
     }
     return (
