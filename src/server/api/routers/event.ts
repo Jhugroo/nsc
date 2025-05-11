@@ -22,14 +22,12 @@ export const eventRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const startDate = new Date();
       startDate.setHours(0, 0, 0, 0);
-      console.log("LEGACY" + input?.showLegacy);
       const dateConstraint =
         input?.showLegacy === true
           ? undefined
           : {
               eventDate: { gte: startDate },
             };
-      console.log(input?.showLegacy);
       return await ctx.db.event.findMany({
         where: {
           departmentId: input?.departmentId,

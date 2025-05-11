@@ -118,7 +118,6 @@ function ModifyDepartment({ departments, user, refetch }: {
             toast.error("user's department could not be unassigned, please try again later")
         }
     });
-    console.log(user.Department)
     return <Dialog>
         <DialogTrigger asChild>
             <Button variant="ghost"><CircleEllipsis /> </Button>
