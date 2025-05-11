@@ -8,15 +8,17 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/utils/api";
 import { LoadingSpinner } from "@/components/ui/custom/spinner";
 import { dateFormatterDisplay } from "@/lib/utils";
+import Link from "next/link";
 export default function EventsList({ take = 100 }: { take?: number }) {
-    const { data: eventData, isLoading } = api.event.get.useQuery({ getForDisplay: { take: take } })
+    const { data: eventData, isLoading } = api.event.getDisplayEvents.useQuery({ take: take })
     const blocks = eventData?.map((event) => {
         return {
             title: event.title,
             date: dateFormatterDisplay(event.eventDate),
             location: event.location,
             image: event?.image?.[0]?.url ?? "/placeholder.svg",
-            link: event.link
+            link: event.link,
+            details: `/events/${event.id}`,
         }
     })
     if (isLoading) {
@@ -48,7 +50,8 @@ export default function EventsList({ take = 100 }: { take?: number }) {
                             <MapPin className="mr-1 h-4 w-4" />
                             {event.location}
                         </div>
-                        {event.link && < a href={event.link} target="_blank">            <Button variant="outline" className="mt-4 w-full">
+                        <Link href={event.details}><Button className="float-right" variant="outline">Details</Button></Link>
+                        {event.link && < a href={event.link} target="_blank"> <Button variant="outline" className="mt-4 w-full">
                             Register Now
                         </Button></a>}
 

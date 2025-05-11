@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 import { Button } from "@/components/ui/button"
 import { api } from "@/utils/api"
 import { Badge } from "../ui/badge";
+import { DialogDescription } from "@radix-ui/react-dialog";
+import { useEffect, useState } from "react";
 type imageType = {
     id: string;
     key: string;
@@ -18,45 +20,59 @@ type imageType = {
 export function EventUploadImage({ id }: {
     id: string,
 }) {
-    const { data: images, refetch } = api.event.getById.useQuery({ id: id });
-
-    const uploadImage = api.event.addImageToEvent.useMutation({
-        onSuccess: () => {
-            toast.success("Image added successfully")
-            refetch && void refetch()
-        },
-    })
+    const [title, setTitle] = useState('title')
 
     return <Dialog>
         <DialogTrigger asChild>
             <Button variant="secondary" >Images</Button>
         </DialogTrigger>
         <DialogContent className="min-w-full  max-h-screen overflow-auto">
+
             <DialogHeader>
                 <DialogTitle className="text-left">
                     <h1 className="text-2xl font-bold">Upload Images</h1>
-                    <p className="text-sm text-muted-foreground">Upload images for event <Badge variant="secondary">{images?.title}</Badge></p>
+                    <p className="text-sm text-muted-foreground">Upload images for event <Badge variant="secondary">{title}</Badge></p>
                 </DialogTitle>
+                <ImageUploaderViewer id={id} titleSetter={setTitle} />
+                <DialogDescription />
             </DialogHeader>
-            {images?.image ? <ImageList images={images.image as imageType[]} refetch={refetch} /> : <LoadingSpinner />}
-            <UploadButton
-                endpoint="imageUploader"
-                onClientUploadComplete={(res) => {
-                    id !== undefined &&
-                        uploadImage.mutate({ id: id, files: res.map(({ key, name, url, type }) => { return { key: key, name: name, url: url, type: type } }) })
-                }}
-                onUploadError={(error: Error) => {
-                    alert(`ERROR! ${error.message}`);
-                }}
-            />
+
         </DialogContent>
     </Dialog>
-
 }
-function ImageList({ images, refetch }: {
+
+function ImageUploaderViewer({ id, titleSetter }: { id: string, titleSetter: (title: string) => void }) {
+    const { data: images, refetch } = api.event.getById.useQuery({ id: id });
+    const uploadImage = api.event.addImageToEvent.useMutation({
+        onSuccess: () => {
+            toast.success("Image added successfully")
+            refetch && void refetch()
+        },
+    })
+    useEffect(() => {
+        titleSetter(images?.title ?? '')
+    }, [images])
+    return <>
+        {images?.image ? <ImageList eventId={id} images={images.image as imageType[]} refetch={refetch} /> : <LoadingSpinner />}
+        <UploadButton
+            endpoint="imageUploader"
+            onClientUploadComplete={(res) => {
+                id !== undefined &&
+                    uploadImage.mutate({ id: id, files: res.map(({ key, name, url, type }) => { return { key: key, name: name, url: url, type: type } }) })
+            }}
+            onUploadError={(error: Error) => {
+                alert(`ERROR! ${error.message}`);
+            }}
+        /></>
+}
+
+function ImageList({ images, refetch, eventId }: {
     refetch?: () => void,
     images?: imageType[],
+    eventId: string
 }) {
+    const { data: image } = api.event.getById.useQuery({ id: eventId });
+    console.log(image)
     const deleteImage = api.event.deleteImage.useMutation({
         onSuccess: () => {
             toast.success("Image deleted")
