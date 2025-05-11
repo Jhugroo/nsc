@@ -31,7 +31,7 @@ export default function CreateEvent({ departments, id, refetcher, CloseTrigger }
         id: string;
         code: string;
         label: string;
-    }[],
+    }[] | undefined,
     id?: string, refetcher?: () => void,
     CloseTrigger: React.ForwardRefExoticComponent<DialogPrimitive.DialogTriggerProps & React.RefAttributes<HTMLButtonElement>>
 }) {
