@@ -16,7 +16,7 @@ export default function EventDetails({ eventId }: { eventId: string }) {
         return <LoadingSpinner />
     }
     return <div className="container">
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto text-center">
             <h2 className="text-3xl font-bold tracking-tight mb-4">{eventData?.title}</h2>
             {(eventData && eventData.image?.length > 0) ? < BackgroundCarousel items={eventData.image.map(image => ({ key: image.key, id: image.name, image: image.url }))} /> : <LoadingSpinner />}
 
