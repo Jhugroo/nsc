@@ -47,7 +47,6 @@ export const departmentPageRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       if (!ctx.session.user?.isVerified)
         throw new TRPCError({ code: "UNAUTHORIZED" });
-      const user = ctx.session.user;
 
       return await ctx.db.departmentPage.create({
         data: {
@@ -55,7 +54,9 @@ export const departmentPageRouter = createTRPCRouter({
           description: input.description,
           link: input.link,
           Department: {
-            connect: { id: input.departmentId ?? user.departmentId },
+            connect: {
+              id: input.departmentId ?? ctx.session.user.departmentId,
+            },
           },
           createdBy: { connect: { id: ctx.session.user.id } },
         },
