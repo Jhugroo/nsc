@@ -43,22 +43,23 @@ model Session {
 }
 
 model User {
-    id                    String      @id @default(cuid())
+    id                    String           @id @default(cuid())
     name                  String?
-    email                 String?     @unique
-    isAdmin               Boolean     @default(false)
-    isVerified            Boolean     @default(false)
+    email                 String?          @unique
+    isAdmin               Boolean          @default(false)
+    isVerified            Boolean          @default(false)
     emailVerified         DateTime?
     image                 String?
     phone                 String?
-    verificationRequested Boolean     @default(false)
-    location              String      @default("nsc")
-    Department            Department? @relation(fields: [departmentId], references: [id])
+    verificationRequested Boolean          @default(false)
+    location              String           @default("nsc")
+    Department            Department?      @relation(fields: [departmentId], references: [id])
     departmentId          String?
     accounts              Account[]
     sessions              Session[]
     Image                 Image[]
     Event                 Event[]
+    DepartmentPage        DepartmentPage[]
 }
 
 model VerificationToken {
@@ -70,15 +71,17 @@ model VerificationToken {
 }
 
 model Image {
-    id          String  @id @default(cuid())
-    key         String  @db.Text
-    name        String
-    url         String  @db.Text
-    type        String?
-    createdBy   User    @relation(fields: [createdById], references: [id])
-    createdById String
-    event       Event?  @relation(fields: [eventId], references: [id], onDelete: Cascade)
-    eventId     String?
+    id               String          @id @default(cuid())
+    key              String          @db.Text
+    name             String
+    url              String          @db.Text
+    type             String?
+    createdBy        User            @relation(fields: [createdById], references: [id])
+    createdById      String
+    event            Event?          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+    eventId          String?
+    DepartmentPage   DepartmentPage? @relation(fields: [departmentPageId], references: [id])
+    departmentPageId String?
 
     @@index([eventId, name])
     @@index([eventId])
@@ -99,15 +102,25 @@ model Event {
     @@index([createdById])
 }
 
-model Location {
-    id    Int    @id @default(autoincrement())
-    code  String
-    label String
+model Department {
+    id             String           @id @default(cuid())
+    code           String
+    label          String
+    users          User[]
+    DepartmentPage DepartmentPage[]
 }
 
-model Department {
-    id    String @id @default(cuid())
-    code  String
-    label String
-    users User[]
+model DepartmentPage {
+    id           String      @id @default(cuid())
+    title        String
+    image        Image[]
+    description  String
+    location     String?
+    link         String?
+    Department   Department? @relation(fields: [departmentId], references: [id])
+    departmentId String?
+    createdBy    User        @relation(fields: [createdById], references: [id])
+    createdById  String
+    createdAt    DateTime    @default(now())
+    updatedAt    DateTime    @updatedAt
 }

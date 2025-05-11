@@ -9,9 +9,13 @@ export const userRouter = createTRPCRouter({
       if (!input) {
         return await ctx.db.user.findFirst({
           where: { id: ctx.session.user.id },
+          include: { Department: { select: { label: true } } },
         });
       }
-      return await ctx.db.user.findFirst({ where: { id: input } });
+      return await ctx.db.user.findFirst({
+        where: { id: input },
+        include: { Department: { select: { label: true } } },
+      });
     }),
 
   getUsers: protectedProcedure

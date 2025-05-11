@@ -12,6 +12,7 @@ export default function CreateDepartment(updateData: {
     id?: string, refetcher?: () => void,
     CloseTrigger: React.ForwardRefExoticComponent<DialogPrimitive.DialogTriggerProps & React.RefAttributes<HTMLButtonElement>>
 }) {
+
     const { data: updatedDepartmentQuery } = api.department.getById.useQuery({ id: updateData.id });
     const [data, setData] = useState(initialiseDepartment)
     useEffect(() => {

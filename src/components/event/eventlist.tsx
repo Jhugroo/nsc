@@ -37,6 +37,8 @@ export default function EventsList({ take = 100 }: { take?: number }) {
                             src={event.image}
                             alt={event.title}
                             fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            priority={index < 2}
                             className="object-cover transition-transform group-hover:scale-105"
                         />
                     </div>

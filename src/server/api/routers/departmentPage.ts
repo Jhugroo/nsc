@@ -8,8 +8,8 @@ import {
 import { TRPCError } from "@trpc/server";
 import { UTApi } from "uploadthing/server";
 export const utapi = new UTApi();
-export const eventRouter = createTRPCRouter({
-  getDisplayEvents: publicProcedure
+export const departmentPageRouter = createTRPCRouter({
+  getDisplayDepartmentPages: publicProcedure
     .input(
       z
         .object({
@@ -21,43 +21,42 @@ export const eventRouter = createTRPCRouter({
       const startDate = new Date();
       startDate.setHours(0, 0, 0, 0);
 
-      return await ctx.db.event.findMany({
-        where: {
-          eventDate: {
-            gte: startDate,
-          },
-        },
+      return await ctx.db.departmentPage.findMany({
         take: !input ? 50 : input.take > 50 ? 50 : input.take,
-        orderBy: { eventDate: "desc" },
-        include: { image: true },
+        orderBy: { createdAt: "desc" },
+        include: { image: true, Department: { select: { label: true } } },
       });
     }),
-  getDisplayEvent: publicProcedure
+  getDisplayDepartmentPage: publicProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {
-      return await ctx.db.event.findFirst({
+      return await ctx.db.departmentPage.findFirst({
         where: { id: input },
-        include: { image: true },
+        include: { image: true, Department: { select: { label: true } } },
       });
     }),
   create: protectedProcedure
     .input(
       z.object({
         title: z.string().min(1),
-        eventDate: z.number(),
         description: z.string(),
-        location: z.string(),
         link: z.string().optional(),
+        departmentId: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session.user?.isAdmin)
+      if (!ctx.session.user?.isVerified)
         throw new TRPCError({ code: "UNAUTHORIZED" });
+      const user = ctx.session.user;
 
-      return await ctx.db.event.create({
+      return await ctx.db.departmentPage.create({
         data: {
-          ...input,
-          eventDate: new Date(input.eventDate),
+          title: input.title,
+          description: input.description,
+          link: input.link,
+          Department: {
+            connect: { id: input.departmentId ?? user.departmentId },
+          },
           createdBy: { connect: { id: ctx.session.user.id } },
         },
       });
@@ -71,27 +70,33 @@ export const eventRouter = createTRPCRouter({
             title: z.string().min(1),
             eventDate: z.number(),
             description: z.string(),
-            location: z.string(),
             link: z.string().optional(),
+            departmentId: z.string().optional(),
           }),
         })
         .optional(),
     )
     .query(async ({ ctx, input }) => {
-      if (!ctx.session.user?.isAdmin)
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+      const forceSearchByDepartmentIfNotAdmin = ctx.session.user?.isAdmin ===
+        false && {
+        departmentId: ctx.session.user?.departmentId ?? undefined,
+      };
+      if (!ctx.session.user?.isAdmin && !ctx.session.user?.departmentId) {
+        return [];
+      }
       if (input?.search) {
-        return await ctx.db.event.findMany({
+        return await ctx.db.departmentPage.findMany({
           where: {
             ...input.search,
-            eventDate: new Date(input.search.eventDate),
+            ...forceSearchByDepartmentIfNotAdmin,
           },
           take: 10,
-          orderBy: { eventDate: "desc" },
+          orderBy: { createdAt: "desc" },
         });
       }
-      return await ctx.db.event.findMany({
-        orderBy: { eventDate: "desc" },
+      return await ctx.db.departmentPage.findMany({
+        where: { ...forceSearchByDepartmentIfNotAdmin },
+        orderBy: { createdAt: "desc" },
       });
     }),
 
@@ -100,21 +105,19 @@ export const eventRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         title: z.string().min(1),
-        eventDate: z.number(),
         description: z.string(),
-        location: z.string(),
         link: z.string().optional(),
+        departmentId: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session.user?.isAdmin)
+      if (!ctx.session.user?.isVerified)
         throw new TRPCError({ code: "UNAUTHORIZED" });
 
-      return await ctx.db.event.update({
+      return await ctx.db.departmentPage.update({
         where: { id: input.id },
         data: {
           ...input,
-          eventDate: new Date(input.eventDate),
         },
       });
     }),
@@ -125,7 +128,7 @@ export const eventRouter = createTRPCRouter({
       if (!id) {
         return null;
       }
-      return await ctx.db.event.findFirst({
+      return await ctx.db.departmentPage.findFirst({
         where: { id },
         include: { image: true },
       });
@@ -138,13 +141,13 @@ export const eventRouter = createTRPCRouter({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
       const images = await ctx.db.image.findMany({
-        where: { eventId: input },
+        where: { departmentPageId: input },
         select: { key: true },
       });
 
       images.map(({ key }) => void utapi.deleteFiles(key));
 
-      return await ctx.db.event.delete({
+      return await ctx.db.departmentPage.delete({
         where: { id: input },
         include: { image: true },
       });
@@ -158,7 +161,7 @@ export const eventRouter = createTRPCRouter({
       void utapi.deleteFiles(key);
       return ctx.db.image.delete({ where: { id: id } });
     }),
-  addImageToEvent: protectedProcedure
+  addImage: protectedProcedure
     .input(
       z.object({
         id: z.string(),
@@ -176,7 +179,7 @@ export const eventRouter = createTRPCRouter({
       if (!ctx.session.user?.isAdmin)
         throw new TRPCError({ code: "UNAUTHORIZED" });
 
-      return await ctx.db.event.update({
+      return await ctx.db.departmentPage.update({
         where: { id: id },
         data: {
           image: {

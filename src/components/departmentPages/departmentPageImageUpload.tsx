@@ -14,10 +14,10 @@ type imageType = {
     name: string;
     url: string;
     type: string | null;
-    eventId: string | null;
+    departmentPageId: string | null;
     createdById: string;
 }
-export function EventUploadImage({ id }: {
+export function DepartmentPageImageUpload({ id }: {
     id: string,
 }) {
     const [title, setTitle] = useState('title')
@@ -31,7 +31,7 @@ export function EventUploadImage({ id }: {
             <DialogHeader>
                 <DialogTitle className="text-left">
                     <h1 className="text-2xl font-bold">Upload Images</h1>
-                    <p className="text-sm text-muted-foreground">Upload images for event <Badge variant="secondary">{title}</Badge></p>
+                    <p className="text-sm text-muted-foreground">Upload images for department <Badge variant="secondary">{title}</Badge></p>
                 </DialogTitle>
                 <ImageUploaderViewer id={id} titleSetter={setTitle} />
                 <DialogDescription />
@@ -42,8 +42,8 @@ export function EventUploadImage({ id }: {
 }
 
 function ImageUploaderViewer({ id, titleSetter }: { id: string, titleSetter: (title: string) => void }) {
-    const { data: images, refetch } = api.event.getById.useQuery({ id: id });
-    const uploadImage = api.event.addImageToEvent.useMutation({
+    const { data: images, refetch } = api.departmentPage.getById.useQuery({ id: id });
+    const uploadImage = api.departmentPage.addImage.useMutation({
         onSuccess: () => {
             toast.success("Image added successfully")
             refetch && void refetch()
@@ -70,7 +70,7 @@ function ImageList({ images, refetch }: {
     refetch?: () => void,
     images?: imageType[],
 }) {
-    const deleteImage = api.event.deleteImage.useMutation({
+    const deleteImage = api.departmentPage.deleteImage.useMutation({
         onSuccess: () => {
             toast.success("Image deleted")
             refetch && void refetch()
