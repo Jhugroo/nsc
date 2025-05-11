@@ -9,6 +9,37 @@ import { TRPCError } from "@trpc/server";
 import { UTApi } from "uploadthing/server";
 export const utapi = new UTApi();
 export const eventRouter = createTRPCRouter({
+  getDisplayEvents: publicProcedure
+    .input(
+      z
+        .object({
+          take: z.number().default(50),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const startDate = new Date();
+      startDate.setHours(0, 0, 0, 0);
+
+      return await ctx.db.event.findMany({
+        where: {
+          eventDate: {
+            gte: startDate,
+          },
+        },
+        take: !input ? 50 : input.take > 50 ? 50 : input.take,
+        orderBy: { eventDate: "desc" },
+        include: { image: true },
+      });
+    }),
+  getDisplayEvent: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.event.findFirst({
+        where: { id: input },
+        include: { image: true },
+      });
+    }),
   create: protectedProcedure
     .input(
       z.object({
@@ -63,37 +94,7 @@ export const eventRouter = createTRPCRouter({
         include: { image: true },
       });
     }),
-  getDisplayEvents: publicProcedure
-    .input(
-      z
-        .object({
-          take: z.number().default(50),
-        })
-        .optional(),
-    )
-    .query(async ({ ctx, input }) => {
-      const startDate = new Date();
-      startDate.setHours(0, 0, 0, 0);
 
-      return await ctx.db.event.findMany({
-        where: {
-          eventDate: {
-            gte: startDate,
-          },
-        },
-        take: !input ? 50 : input.take > 50 ? 50 : input.take,
-        orderBy: { eventDate: "desc" },
-        include: { image: true },
-      });
-    }),
-  getDisplayEvent: publicProcedure
-    .input(z.string())
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.event.findFirst({
-        where: { id: input },
-        include: { image: true },
-      });
-    }),
   updateById: protectedProcedure
     .input(
       z.object({
