@@ -28,11 +28,14 @@ export const departmentPageRouter = createTRPCRouter({
       });
     }),
   getDisplayDepartmentPage: publicProcedure
-    .input(z.string())
+    .input(z.string().optional())
     .query(async ({ ctx, input }) => {
       return await ctx.db.departmentPage.findFirst({
         where: { id: input },
-        include: { image: true, Department: { select: { label: true } } },
+        include: {
+          image: true,
+          Department: { select: { label: true, id: true } },
+        },
       });
     }),
   create: protectedProcedure
@@ -47,15 +50,14 @@ export const departmentPageRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       if (!ctx.session.user?.isVerified)
         throw new TRPCError({ code: "UNAUTHORIZED" });
-      const user = ctx.session.user;
-
+      const { departmentId: _, ...filteredInput } = input;
       return await ctx.db.departmentPage.create({
         data: {
-          title: input.title,
-          description: input.description,
-          link: input.link,
+          ...filteredInput,
           Department: {
-            connect: { id: input.departmentId ?? user.departmentId },
+            connect: {
+              id: input.departmentId ?? ctx.session.user.departmentId,
+            },
           },
           createdBy: { connect: { id: ctx.session.user.id } },
         },

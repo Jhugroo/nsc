@@ -7,6 +7,7 @@ import { api } from "@/utils/api"
 import { Textarea } from "../ui/textarea";
 import type * as DialogPrimitive from "@radix-ui/react-dialog"
 import { dateFormatter } from "@/lib/utils";
+import AutocompleteField from "../ui/custom/autocomplete";
 type createEventType = {
     id: string;
     title: string;
@@ -14,6 +15,7 @@ type createEventType = {
     location: string;
     description: string;
     link: string
+    departmentId?: string;
 }
 
 const initialiseEvent: createEventType = {
@@ -24,28 +26,35 @@ const initialiseEvent: createEventType = {
     description: '',
     link: ''
 };
-export default function CreateEvent(updateData: {
+export default function CreateEvent({ departments, id, refetcher, CloseTrigger }: {
+    departments?: {
+        id: string;
+        code: string;
+        label: string;
+    }[],
     id?: string, refetcher?: () => void,
     CloseTrigger: React.ForwardRefExoticComponent<DialogPrimitive.DialogTriggerProps & React.RefAttributes<HTMLButtonElement>>
 }) {
-    const { data: updateEventQuery, refetch } = api.event.getById.useQuery({ id: updateData.id });
+
+    const { data: updateEventQuery, refetch } = api.event.getById.useQuery({ id: id });
     const [data, setData] = useState(initialiseEvent)
     useEffect(() => {
-        if (updateEventQuery && updateData.id) {
+        if (updateEventQuery && id) {
             setData({
                 id: updateEventQuery.id,
                 title: updateEventQuery.title,
                 eventDate: (updateEventQuery.eventDate).getTime(),
                 location: updateEventQuery.location,
                 description: updateEventQuery.description,
-                link: updateEventQuery.link ?? ''
+                link: updateEventQuery.link ?? '',
+                departmentId: updateEventQuery.departmentId ?? undefined
             })
         }
-    }, [updateEventQuery, updateData.id])
+    }, [updateEventQuery, id])
     const createEvent = api.event.create.useMutation({
         onSuccess: (createdEvent) => {
             setData(initialiseEvent)
-            updateData.refetcher ? void updateData.refetcher() : null;
+            refetcher ? void refetcher() : null;
             void refetch()
             toast.success('Event ' + createdEvent.title + ' created successfully')
         },
@@ -55,7 +64,7 @@ export default function CreateEvent(updateData: {
     });
     const updateEvent = api.event.updateById.useMutation({
         onSuccess: (updatedEvent) => {
-            updateData.refetcher ? void updateData.refetcher() : null;
+            refetcher ? void refetcher() : null;
             toast.success('Event ' + updatedEvent.title + ' updated successfully')
             void refetch()
         }
@@ -82,6 +91,15 @@ export default function CreateEvent(updateData: {
                 <Label htmlFor="location">Location</Label>
                 <Input id="location" name="location" value={data.location} onChange={(e) => { updateDataFields(e); }} />
             </div>
+            {departments !== undefined && <div className="p-1">
+                <AutocompleteField showLabel={true} displayName="Department" hideInput={true} onValueChange={(e) => {
+                    setData({
+                        ...data,
+                        departmentId: e
+                    })
+                }} value={data.departmentId} fieldName="departmentId"
+                    options={departments.map(department => ({ value: department.id, label: department.label }))} />
+            </div>}
             <Label htmlFor="date">Date</Label>
             <Input id="date" type="date" name="eventDate" value={data.eventDate > 0 ? (new Date(data.eventDate)).toISOString().split('T')[0] : (new Date()).toISOString().split('T')[0]} onChange={(e) => { setData({ ...data, eventDate: dateFormatter(e.target.value) }) }} />
             <div className="p-1">
@@ -93,9 +111,9 @@ export default function CreateEvent(updateData: {
                 <Input id="link" name="link" value={data.link} onChange={(e) => { updateDataFields(e); }} />
             </div>
             <div className="p-1">
-                <updateData.CloseTrigger asChild>
+                <CloseTrigger asChild>
                     <Button onClick={() => save()}>Save</Button>
-                </updateData.CloseTrigger>
+                </CloseTrigger>
             </div>
         </div >
     )

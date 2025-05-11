@@ -14,18 +14,26 @@ export const eventRouter = createTRPCRouter({
       z
         .object({
           take: z.number().default(50),
+          departmentId: z.string().optional(),
+          showLegacy: z.boolean().default(false).optional(),
         })
         .optional(),
     )
     .query(async ({ ctx, input }) => {
       const startDate = new Date();
       startDate.setHours(0, 0, 0, 0);
-
+      console.log("LEGACY" + input?.showLegacy);
+      const dateConstraint =
+        input?.showLegacy === true
+          ? undefined
+          : {
+              eventDate: { gte: startDate },
+            };
+      console.log(input?.showLegacy);
       return await ctx.db.event.findMany({
         where: {
-          eventDate: {
-            gte: startDate,
-          },
+          departmentId: input?.departmentId,
+          ...dateConstraint,
         },
         take: !input ? 50 : input.take > 50 ? 50 : input.take,
         orderBy: { eventDate: "desc" },
@@ -48,16 +56,22 @@ export const eventRouter = createTRPCRouter({
         description: z.string(),
         location: z.string(),
         link: z.string().optional(),
+        departmentId: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.session.user?.isAdmin)
         throw new TRPCError({ code: "UNAUTHORIZED" });
-
+      const { departmentId: _, ...filteredInput } = input;
       return await ctx.db.event.create({
         data: {
-          ...input,
+          ...filteredInput,
           eventDate: new Date(input.eventDate),
+          Department: {
+            connect: {
+              id: input.departmentId ?? ctx.session.user.departmentId,
+            },
+          },
           createdBy: { connect: { id: ctx.session.user.id } },
         },
       });
@@ -104,6 +118,7 @@ export const eventRouter = createTRPCRouter({
         description: z.string(),
         location: z.string(),
         link: z.string().optional(),
+        departmentId: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {

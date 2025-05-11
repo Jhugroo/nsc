@@ -9,12 +9,13 @@ import { api } from "@/utils/api";
 import { LoadingSpinner } from "@/components/ui/custom/spinner";
 import { dateFormatterDisplay } from "@/lib/utils";
 import Link from "next/link";
-export default function EventsList({ take = 100 }: { take?: number }) {
-    const { data: eventData, isLoading } = api.event.getDisplayEvents.useQuery({ take: take })
+export default function EventsList({ take = 100, departmentId, showLegacy = false }: { take?: number, departmentId?: string, showLegacy?: boolean }) {
+    const { data: eventData, isLoading } = api.event.getDisplayEvents.useQuery({ take, departmentId, showLegacy });
     const blocks = eventData?.map((event) => {
         return {
             title: event.title,
             date: dateFormatterDisplay(event.eventDate),
+            canRegister: event.eventDate.setHours(0, 0, 0, 0) >= (new Date()).setHours(0, 0, 0, 0),
             location: event.location,
             image: event?.image?.[0]?.url ?? "/placeholder.svg",
             link: event.link,
@@ -54,7 +55,7 @@ export default function EventsList({ take = 100 }: { take?: number }) {
                         </div>
                         <div className="flex space-x-2 mt-4">
                             <Link href={event.details}><Button className="float-right" variant="outline">Details</Button></Link>
-                            {event.link && < a href={event.link} target="_blank"> <Button variant="secondary">
+                            {event.link && event.canRegister && < a href={event.link} target="_blank"> <Button variant="secondary">
                                 Register Now
                             </Button></a>}
                         </div>

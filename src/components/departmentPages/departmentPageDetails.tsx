@@ -10,6 +10,7 @@ import {
 import { Button } from "../ui/button";
 import { BackgroundCarousel } from "../ui/custom/background-carousel";
 import Link from "next/link";
+import EventsList from "../event/eventlist";
 export default function DepartmentPageDetails({ departmentPageId }: { departmentPageId: string }) {
     const { data: departmentPageData, isLoading } = api.departmentPage.getDisplayDepartmentPage.useQuery(departmentPageId)
     if (isLoading) {
@@ -30,8 +31,9 @@ export default function DepartmentPageDetails({ departmentPageId }: { department
                     {departmentPageData?.Department?.label ?? ''}
                 </span>
             </div>
-
+            <h2 className="text-3xl font-bold tracking-tight mb-4">Events organised by our department</h2>
         </div >
+        <EventsList departmentId={departmentPageData?.Department?.id} showLegacy={true} />
         <Link href="/departments">
             <Button variant="destructive" className="fixed bottom-4 left-6 z-50">
                 <CornerDownLeft />

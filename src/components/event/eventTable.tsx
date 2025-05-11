@@ -17,6 +17,9 @@ import { dateFormatterDisplay } from "@/lib/utils";
 
 export default function EventTable() {
     const { data: event, isLoading, refetch } = api.event.get.useQuery()
+    const { data: departments } = api.department.get.useQuery()
+
+
     const deleteEvent = api.event.delete.useMutation({
         onSuccess: (deletedEvent) => {
             toast.success('event ' + deletedEvent.title + ' deleted successfully')
@@ -28,7 +31,7 @@ export default function EventTable() {
     });
     return (
         <>
-            <CreateEditEventDialog refetch={refetch} />
+            <CreateEditEventDialog refetch={refetch} departments={departments} />
             <Table>
                 <TableCaption>A list of your events</TableCaption>
                 <TableHeader>
@@ -44,7 +47,7 @@ export default function EventTable() {
                             <TableCell className="font-medium">{singleEvent.title}</TableCell>
                             <TableCell className="font-medium">{dateFormatterDisplay(singleEvent.eventDate)}</TableCell>
                             <TableCell className="font-medium space-x-2">
-                                <CreateEditEventDialog refetch={refetch} eventId={singleEvent.id} />
+                                <CreateEditEventDialog refetch={refetch} eventId={singleEvent.id} departments={departments} />
                                 <EventUploadImage id={singleEvent.id} />
                                 <Button variant="destructive" onClick={() => { deleteEvent.mutate(singleEvent.id) }}>Delete</Button>
                             </TableCell>
@@ -58,7 +61,13 @@ export default function EventTable() {
 }
 
 
-function CreateEditEventDialog({ refetch, eventId }: { eventId?: string, refetch?: () => void }) {
+function CreateEditEventDialog({ refetch, eventId, departments }: {
+    departments: {
+        id: string;
+        code: string;
+        label: string;
+    }[], eventId?: string, refetch?: () => void
+}) {
     const typeString: string = eventId ? "Update" : "Create new"
     return <Dialog>
         <DialogTrigger asChild>
@@ -70,7 +79,7 @@ function CreateEditEventDialog({ refetch, eventId }: { eventId?: string, refetch
                     {typeString} event
                 </DialogTitle>
             </DialogHeader>
-            <CreateEvent refetcher={refetch} id={eventId} CloseTrigger={DialogTrigger} />
+            <CreateEvent refetcher={refetch} id={eventId} CloseTrigger={DialogTrigger} departments={departments} />
         </DialogContent>
     </Dialog>
 }
