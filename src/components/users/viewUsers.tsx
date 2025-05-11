@@ -109,6 +109,16 @@ function ModifyDepartment({ departments, user, refetch }: {
         id: string;
     }, refetch?: () => void
 }) {
+    const unassignDepartment = api.department.switchDepartment.useMutation({
+        onSuccess: (updatedUser) => {
+            refetch ? void refetch() : null;
+            toast.success(`user ${updatedUser.name}'s department unassigned successfully`)
+        },
+        onError: () => {
+            toast.error("user's department could not be unassigned, please try again later")
+        }
+    });
+    console.log(user.Department)
     return <Dialog>
         <DialogTrigger asChild>
             <Button variant="ghost"><CircleEllipsis /> </Button>
@@ -121,6 +131,11 @@ function ModifyDepartment({ departments, user, refetch }: {
             </DialogHeader>
 
             <SwitchDepartment departments={departments} user={user} refetcher={refetch} CloseTrigger={DialogTrigger} />
+            {user.Department && <div className="p-1">
+                <DialogTrigger asChild>
+                    <Button variant="destructive" onClick={() => unassignDepartment.mutate({ userId: user.id })}>Unassign Department</Button>
+                </DialogTrigger>
+            </div>}
         </DialogContent>
     </Dialog>
 }

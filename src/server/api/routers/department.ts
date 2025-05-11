@@ -55,21 +55,21 @@ export const departmentRouter = createTRPCRouter({
     .input(
       z.object({
         userId: z.string(),
-        departmentId: z.string(),
+        departmentId: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.session.user?.isAdmin) {
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
+      const departmentAction = input.departmentId
+        ? { connect: { id: input.departmentId } }
+        : { disconnect: { id: input.departmentId } };
+
       return await ctx.db.user.update({
         where: { id: input.userId },
         data: {
-          Department: {
-            connect: {
-              id: input.departmentId,
-            },
-          },
+          Department: departmentAction,
         },
       });
     }),

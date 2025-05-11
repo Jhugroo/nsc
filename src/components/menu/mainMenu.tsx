@@ -26,14 +26,14 @@ import { ModeToggle } from "../theme/switcher";
 export const adminLinks = [
   { link: "/view-users", Icon: Users, text: "Users" },
   { link: "/event", Icon: CalendarCheck2Icon, text: "Events" },
-  { link: "/department", Icon: Building, text: "Department" },
+  { link: "/department", Icon: Building, text: "Department List" },
 ]
 const verifiedLinks: {
   link: string;
   Icon: LucideIcon;
   text: string;
 }[] = [
-
+    { link: "/admin/department-pages", Icon: CalendarCheck2Icon, text: "Department Pages" },
   ]
 
 export function MainMenu() {
@@ -52,11 +52,14 @@ export function MainMenu() {
       <SheetContent className="w-fit">
         <SheetTitle onClick={() => closeMenu()}>
           <div className="flex mt-4"><Link href="/"><Button variant="ghost"><Image src={logo} className='h-[2rem] w-[12rem]' quality={100} alt='product preview' /></Button></Link><ModeToggle /></div>
-          {(user?.isVerified ?? user?.isAdmin) && <>
-            {verifiedLinks.map((verifiedLink) => <MenuLink href={verifiedLink.link} pathname={pathname} Icon={verifiedLink.Icon} text={verifiedLink.text} key={verifiedLink.link} />)}
-          </>}
+
+          <MenuLink href="/departments" pathname={pathname} Icon={Building} text="Departments" />
           <MenuLink href="/events" pathname={pathname} Icon={CalendarCheck2Icon} text="Events" />
           <MenuLink href="/about" pathname={pathname} Icon={Blocks} text="About Us" />
+          {(user?.isVerified ?? user?.isAdmin) && <>
+            <MenuItem itemKey="verifiedTab" Icon={Shield} text="Verified Section" key="verifiedTab" noLink={true} />
+            {verifiedLinks.map((verifiedLink) => <MenuLink href={verifiedLink.link} pathname={pathname} Icon={verifiedLink.Icon} text={verifiedLink.text} key={verifiedLink.link} />)}
+          </>}
           {user?.isAdmin && <>
             <MenuItem itemKey="adminTab" Icon={Shield} text="Admin Section" key="adminTab" />
             {adminLinks.slice(0, 5).map((adminLink) => <MenuLink href={"/admin" + adminLink.link} pathname={pathname} Icon={adminLink.Icon} text={adminLink.text} key={adminLink.link} />)}
@@ -86,9 +89,9 @@ function MenuLink({ pathname, href, text, Icon }: { pathname: string, href: stri
   );
 }
 
-function MenuItem({ itemKey, text, Icon }: { itemKey: string, text: string, Icon?: LucideIcon }) {
+function MenuItem({ itemKey, text, Icon, noLink = false }: { itemKey: string, text: string, Icon?: LucideIcon, noLink?: boolean }) {
   return (
-    <Link href="/admin">
+    <Link href={noLink ? '#' : "/admin"}>
       <div
         key={itemKey}
         className={cn(

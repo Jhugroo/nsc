@@ -53,6 +53,9 @@ export default function ProfilePage() {
                     {!isLoading ? (
                         <>
                             <div className="p-1">
+                                <Label ><strong>Department:</strong> {(user?.Department as { label: string } | null)?.label ?? 'N/A'}</Label>
+                            </div>
+                            <div className="p-1">
                                 <Label ><strong>Email:</strong> {user?.email}</Label>
                             </div>
                             <div className="p-1">

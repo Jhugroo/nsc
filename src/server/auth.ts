@@ -21,10 +21,11 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: DefaultSession["user"] & {
       id: string;
-      location: string
-      isAdmin: boolean
-      isVerified: boolean
-      locations: { id: number, code: string, label: string }[]
+      location: string;
+      isAdmin: boolean;
+      isVerified: boolean;
+      locations: { id: number; code: string; label: string }[];
+      departmentId: string;
       // ...other food
       // role: UserRole;
     };
@@ -47,8 +48,15 @@ export const authOptions: NextAuthOptions = {
       ...session,
       user: {
         ...session.user,
-        ...(await db.user.findFirst({ where: { id: user.id }, select: { location: true, isAdmin: true, isVerified: true } })),
-        locations: (await db.location.findMany()),
+        ...(await db.user.findFirst({
+          where: { id: user.id },
+          select: {
+            location: true,
+            isAdmin: true,
+            isVerified: true,
+            departmentId: true,
+          },
+        })),
         id: user.id,
       },
     }),
