@@ -86,12 +86,10 @@ export const eventRouter = createTRPCRouter({
           },
           take: 10,
           orderBy: { eventDate: "desc" },
-          include: { image: true },
         });
       }
       return await ctx.db.event.findMany({
         orderBy: { eventDate: "desc" },
-        include: { image: true },
       });
     }),
 
