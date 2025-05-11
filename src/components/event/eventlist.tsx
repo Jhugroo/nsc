@@ -50,10 +50,13 @@ export default function EventsList({ take = 100 }: { take?: number }) {
                             <MapPin className="mr-1 h-4 w-4" />
                             {event.location}
                         </div>
-                        <Link href={event.details}><Button className="float-right" variant="outline">Details</Button></Link>
-                        {event.link && < a href={event.link} target="_blank"> <Button variant="outline" className="mt-4 w-full">
-                            Register Now
-                        </Button></a>}
+                        <div className="flex space-x-2 mt-4">
+                            <Link href={event.details}><Button className="float-right" variant="outline">Details</Button></Link>
+                            {event.link && < a href={event.link} target="_blank"> <Button variant="secondary">
+                                Register Now
+                            </Button></a>}
+                        </div>
+
 
                     </div>
                 </div>
