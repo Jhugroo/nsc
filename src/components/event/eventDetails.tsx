@@ -6,10 +6,12 @@ import { LoadingSpinner } from "@/components/ui/custom/spinner";
 import {
     MapPin,
     Calendar,
+    CornerDownLeft,
 } from "lucide-react";
 import { dateFormatterDisplay } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { BackgroundCarousel } from "../ui/custom/background-carousel";
+import Link from "next/link";
 export default function EventDetails({ eventId }: { eventId: string }) {
     const { data: eventData, isLoading } = api.event.getDisplayEvent.useQuery(eventId)
     if (isLoading) {
@@ -34,11 +36,16 @@ export default function EventDetails({ eventId }: { eventId: string }) {
                 </span>
             </div>
 
-            {eventData?.link && < a href={eventData.link} target="_blank">
-                <Button variant="outline" className="mt-4 w-full">
+            {eventData?.link && <Link href={eventData.link} target="_blank">
+                <Button variant="default" className="mt-4">
                     Register Now
                 </Button>
-            </a>}
+            </Link>}
         </div >
+        <Link href="/events">
+            <Button variant="destructive" className="fixed bottom-4 left-6 z-50">
+                <CornerDownLeft />
+            </Button>
+        </Link>
     </div >
 }

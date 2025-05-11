@@ -45,10 +45,10 @@ export default function Component() {
               </p>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
-              <Button size="lg" className="bg-red-600 hover:bg-red-700">
+              <Button size="lg" variant="destructive">
                 Get Involved
               </Button>
-              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
+              <Button size="lg" variant="secondary" >
                 Learn More
               </Button>
             </div>
@@ -323,6 +323,6 @@ export default function Component() {
           </div>
         </section>
       </main>
-    </div>
+    </div >
   )
 }
