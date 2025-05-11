@@ -66,7 +66,7 @@ function CreateEditEventDialog({ refetch, eventId, departments }: {
         id: string;
         code: string;
         label: string;
-    }[], eventId?: string, refetch?: () => void
+    }[] | undefined, eventId?: string, refetch?: () => void
 }) {
     const typeString: string = eventId ? "Update" : "Create new"
     return <Dialog>
