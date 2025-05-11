@@ -16,7 +16,8 @@ import {
   Users,
   Shield,
   Blocks,
-  CalendarCheck2Icon
+  CalendarCheck2Icon,
+  Building
 } from "lucide-react"
 import Image from 'next/image'
 import logo from '../../../public/logo.png'
@@ -25,6 +26,7 @@ import { ModeToggle } from "../theme/switcher";
 export const adminLinks = [
   { link: "/view-users", Icon: Users, text: "Users" },
   { link: "/event", Icon: CalendarCheck2Icon, text: "Events" },
+  { link: "/department", Icon: Building, text: "Department" },
 ]
 const verifiedLinks: {
   link: string;

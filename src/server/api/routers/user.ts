@@ -46,6 +46,7 @@ export const userRouter = createTRPCRouter({
           phone: true,
           email: true,
           emailVerified: true,
+          Department: { select: { label: true, id: true } },
         },
       });
       return { users: users, isNextNull: isNextNull };
@@ -62,9 +63,6 @@ export const userRouter = createTRPCRouter({
         .optional(),
     )
     .mutation(async ({ ctx, input }) => {
-      console.log(input);
-      if (input?.current === false && input?.status === "isVerified") {
-      }
       if (!input) {
         return ctx.db.user.update({
           where: { id: ctx.session.user.id },

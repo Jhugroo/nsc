@@ -15,8 +15,11 @@ import toast from "react-hot-toast";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { LoadingSpinner } from "../ui/custom/spinner";
-import { MailPlus } from "lucide-react";
+import { MailPlus, CircleEllipsis } from "lucide-react";
 import PaginationNavigator from "../ui/custom/paginationNavigator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import SwitchDepartment from "./switchDepartment";
+import { Badge } from "../ui/badge";
 type searchDataType = {
     verificationRequested?: boolean
     skip: number
@@ -24,6 +27,7 @@ type searchDataType = {
 export function ViewUsers() {
     const [searchData, setSearchData] = useState<searchDataType>({ skip: 0, verificationRequested: false })
     const { data: users, isLoading, refetch } = api.user.getUsers.useQuery(searchData);
+    const { data: departments } = api.department.get.useQuery()
     const currentUser = useSession()
     const [disableButtons, setDisableButtons] = useState(false)
     const mutateUsers = api.user.userStatus.useMutation({
@@ -38,6 +42,7 @@ export function ViewUsers() {
     useEffect(() => {
         setSearchData({ ...searchData, skip: skip })
     }, [skip])
+
     return (
         <>
             <div className="p-1 pt-4">
@@ -54,6 +59,7 @@ export function ViewUsers() {
                         <TableHead>Name</TableHead>
                         <TableHead >E-mail</TableHead>
                         <TableHead >Phone</TableHead>
+                        <TableHead>Department</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -63,6 +69,7 @@ export function ViewUsers() {
                             <TableCell className="font-medium">{user.name} </TableCell>
                             <TableCell className="flex">{user.email} {user.email && <a className="pl-2" href={`mailto:${user.email}`}><MailPlus /></a>} </TableCell>
                             <TableCell>{user.phone}</TableCell>
+                            <TableCell ><Badge className="text-md" variant="outline">{(user.Department as { label: string } | null)?.label ?? 'N/A'}</Badge> {departments === undefined ? <LoadingSpinner /> : <ModifyDepartment departments={departments} user={({ ...user, name: user.name ?? 'N/A' })} refetch={refetch} />}</TableCell>
                             <TableCell>
                                 {user.id === currentUser.data?.user.id ? <>That's you!</> : (
                                     searchData?.verificationRequested ? <Button disabled={disableButtons} onClick={() => { toast.loading("Confirming user"); setDisableButtons(true); mutateUsers.mutate({ id: user.id, current: false, status: "isVerified" }) }}>Accept</Button>
@@ -71,7 +78,6 @@ export function ViewUsers() {
                                             <Button variant={!user.isVerified ? "destructive" : "default"} className="mr-2" disabled={disableButtons} onClick={() => { toast.loading((user.isVerified ? "Unconfirm" : "Confirm") + "ing user"); setDisableButtons(true); mutateUsers.mutate({ id: user.id, current: user.isVerified ?? false, status: "isVerified" }) }}    >{user.isVerified ? "Unconfirm" : "Confirm"}</Button>
                                             <Button variant={!user.isAdmin ? "destructive" : "default"} disabled={disableButtons} onClick={() => { toast.loading((user.isAdmin ? "Demot" : "Promot") + "ing user"); setDisableButtons(true); mutateUsers.mutate({ id: user.id, current: user.isAdmin ?? false, status: "isAdmin" }) }}>{user.isAdmin ? "Demote" : "Promote"}</Button>
                                         </>)}
-
                             </TableCell>
                         </TableRow>
                     )) :
@@ -84,8 +90,37 @@ export function ViewUsers() {
                         </TableRow>
                     }
                 </TableBody>
-
             </Table >
         </>
     )
+}
+function ModifyDepartment({ departments, user, refetch }: {
+    departments: {
+        id: string;
+        code: string;
+        label: string;
+    }[],
+    user: {
+        Department: {
+            label: string;
+            id: string;
+        } | null;
+        name: string;
+        id: string;
+    }, refetch?: () => void
+}) {
+    return <Dialog>
+        <DialogTrigger asChild>
+            <Button variant="ghost"><CircleEllipsis /> </Button>
+        </DialogTrigger>
+        <DialogContent className="h-fit overflow-auto">
+            <DialogHeader>
+                <DialogTitle className="text-left">
+                    Current Department for  {user.name}  → <Badge>{(user.Department as { label: string } | null)?.label ?? 'N/A'}</Badge>
+                </DialogTitle>
+            </DialogHeader>
+
+            <SwitchDepartment departments={departments} user={user} refetcher={refetch} CloseTrigger={DialogTrigger} />
+        </DialogContent>
+    </Dialog>
 }
