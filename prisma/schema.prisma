@@ -89,15 +89,17 @@ model Image {
 }
 
 model Event {
-    id          String   @id @default(cuid())
-    title       String
-    eventDate   DateTime
-    image       Image[]
-    description String
-    location    String
-    link        String?
-    createdBy   User     @relation(fields: [createdById], references: [id])
-    createdById String
+    id           String      @id @default(cuid())
+    title        String
+    eventDate    DateTime
+    image        Image[]
+    description  String
+    location     String
+    link         String?
+    Department   Department? @relation(fields: [departmentId], references: [id])
+    departmentId String?
+    createdBy    User        @relation(fields: [createdById], references: [id])
+    createdById  String
 
     @@index([createdById])
 }
@@ -108,6 +110,7 @@ model Department {
     label          String
     users          User[]
     DepartmentPage DepartmentPage[]
+    Event          Event[]
 }
 
 model DepartmentPage {
