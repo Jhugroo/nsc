@@ -8,6 +8,7 @@ import { Textarea } from "../ui/textarea";
 import type * as DialogPrimitive from "@radix-ui/react-dialog"
 import { dateFormatter } from "@/lib/utils";
 import AutocompleteField from "../ui/custom/autocomplete";
+import { useDepartmentsStore } from "@/state/department";
 type createEventType = {
     id: string;
     title: string;
@@ -26,16 +27,11 @@ const initialiseEvent: createEventType = {
     description: '',
     link: ''
 };
-export default function CreateEvent({ departments, id, refetcher, CloseTrigger }: {
-    departments?: {
-        id: string;
-        code: string;
-        label: string;
-    }[] | undefined,
+export default function CreateEvent({ id, refetcher, CloseTrigger }: {
     id?: string, refetcher?: () => void,
     CloseTrigger: React.ForwardRefExoticComponent<DialogPrimitive.DialogTriggerProps & React.RefAttributes<HTMLButtonElement>>
 }) {
-
+    const { departments } = useDepartmentsStore()
     const { data: updateEventQuery, refetch } = api.event.getById.useQuery({ id: id });
     const [data, setData] = useState(initialiseEvent)
     useEffect(() => {
