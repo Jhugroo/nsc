@@ -14,6 +14,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import CreateDepartmentPage from "./create";
 import { DepartmentPageImageUpload } from "./departmentPageImageUpload";
 import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { useDepartmentsStore } from "@/state/department";
 
 export default function DepartmentPageTable() {
     const { data: department, isLoading, refetch } = api.departmentPage.get.useQuery()
@@ -22,7 +24,12 @@ export default function DepartmentPageTable() {
     const { data: departments } = api.department.get.useQuery(undefined, {
         enabled: isCurrentUserAdmin === true,
     })
-
+    const { setDepartments } = useDepartmentsStore()
+    useEffect(() => {
+        if (departments) {
+            setDepartments(departments)
+        }
+    }, [departments])
     const deleteDepartmentPage = api.departmentPage.delete.useMutation({
         onSuccess: (deletedDepartmentPage) => {
             toast.success('department ' + deletedDepartmentPage.title + ' deleted successfully')
@@ -34,7 +41,7 @@ export default function DepartmentPageTable() {
     });
     return (
         <>
-            <CreateEditDepartmentPageDialog refetch={refetch} departments={departments} />
+            <CreateEditDepartmentPageDialog refetch={refetch} />
             <Table>
                 <TableCaption>A list of your department pages</TableCaption>
                 <TableHeader>
@@ -48,7 +55,7 @@ export default function DepartmentPageTable() {
                         <TableRow key={singleDepartmentPage.id}>
                             <TableCell className="font-medium">{singleDepartmentPage.title}</TableCell>
                             <TableCell className="font-medium space-x-2">
-                                <CreateEditDepartmentPageDialog departments={departments} refetch={refetch} departmentId={singleDepartmentPage.id} />
+                                <CreateEditDepartmentPageDialog refetch={refetch} departmentId={singleDepartmentPage.id} />
                                 <DepartmentPageImageUpload id={singleDepartmentPage.id} />
                                 <Button variant="destructive" onClick={() => { deleteDepartmentPage.mutate(singleDepartmentPage.id) }}>Delete</Button>
                             </TableCell>
@@ -62,12 +69,7 @@ export default function DepartmentPageTable() {
 }
 
 
-function CreateEditDepartmentPageDialog({ departments, refetch, departmentId }: {
-    departments?: {
-        id: string;
-        code: string;
-        label: string;
-    }[],
+function CreateEditDepartmentPageDialog({ refetch, departmentId }: {
     departmentId?: string,
     refetch?: () => void
 }) {
@@ -82,7 +84,7 @@ function CreateEditDepartmentPageDialog({ departments, refetch, departmentId }: 
                     {typeString} department
                 </DialogTitle>
             </DialogHeader>
-            <CreateDepartmentPage departments={departments} refetcher={refetch} id={departmentId} CloseTrigger={DialogTrigger} />
+            <CreateDepartmentPage refetcher={refetch} id={departmentId} CloseTrigger={DialogTrigger} />
         </DialogContent>
     </Dialog>
 }

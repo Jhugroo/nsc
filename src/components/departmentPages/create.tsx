@@ -7,6 +7,7 @@ import { api } from "@/utils/api"
 import { Textarea } from "../ui/textarea";
 import type * as DialogPrimitive from "@radix-ui/react-dialog"
 import AutocompleteField from "../ui/custom/autocomplete";
+import { useDepartmentsStore } from "@/state/department";
 type createDepartmentPageType = {
     id: string;
     title: string;
@@ -21,16 +22,11 @@ const initialiseDepartmentPage: createDepartmentPageType = {
     description: '',
     link: ''
 };
-export default function CreateDepartementPage({ departments, id, refetcher, CloseTrigger }: {
-    departments?: {
-        id: string;
-        code: string;
-        label: string;
-    }[],
+export default function CreateDepartementPage({ id, refetcher, CloseTrigger }: {
     id?: string, refetcher?: () => void,
     CloseTrigger: React.ForwardRefExoticComponent<DialogPrimitive.DialogTriggerProps & React.RefAttributes<HTMLButtonElement>>
 }) {
-
+    const { departments } = useDepartmentsStore()
     const { data: updateDepartmentPageQuery, refetch } = api.departmentPage.getById.useQuery({ id: id });
     const [data, setData] = useState(initialiseDepartmentPage)
     useEffect(() => {
@@ -82,7 +78,7 @@ export default function CreateDepartementPage({ departments, id, refetcher, Clos
                 <Label htmlFor="title">Title</Label>
                 <Input id="title" name="title" value={data.title} onChange={(e) => { updateDataFields(e); }} />
             </div>
-            {departments !== undefined && <div className="p-1">
+            {departments !== undefined && departments.length > 0 && <div className="p-1">
                 <AutocompleteField showLabel={true} displayName="Department" hideInput={true} onValueChange={(e) => {
                     setData({
                         ...data,
