@@ -74,10 +74,12 @@ export default function DepartmentPageTable() {
                         <TableRow key={singleDepartmentPage.id}>
                             <TableCell className="font-medium">{singleDepartmentPage.title}</TableCell>
                             <TableCell className="font-medium space-x-2">
-                                <Button className={`${singleDepartmentPage.activated && "bg-green-500 hover:bg-green-600"}`} onClick={() => { switchDepartmentPageActivation.mutate({ id: singleDepartmentPage.id, departmentId: singleDepartmentPage.departmentId ?? '' }) }} disabled={singleDepartmentPage.activated} variant="outline">{singleDepartmentPage.activated ? <ShieldCheck /> : <ShieldPlus />}</Button>
+                                <Button title={departments !== undefined && departments.length > 0
+                                    ? `Activate this page for ${departments.find(({ id }) => id === singleDepartmentPage.departmentId)?.label ?? 'Unknown Department'}`
+                                    : 'Department page is not linked to any department'} className={`${singleDepartmentPage.activated && "bg-green-500 hover:bg-green-600"}`} onClick={() => { switchDepartmentPageActivation.mutate({ id: singleDepartmentPage.id, departmentId: singleDepartmentPage.departmentId ?? '' }) }} disabled={singleDepartmentPage.activated} variant="outline">{singleDepartmentPage.activated ? <ShieldCheck /> : <ShieldPlus />}</Button>
                                 <CreateEditDepartmentPageDialog refetch={refetch} departmentId={singleDepartmentPage.id} />
                                 <DepartmentPageImageUpload id={singleDepartmentPage.id} />
-                                <Button variant="destructive" onClick={() => { deleteDepartmentPage.mutate(singleDepartmentPage.id) }}><Delete /></Button>
+                                <Button title="Delete department page" variant="destructive" onClick={() => { deleteDepartmentPage.mutate(singleDepartmentPage.id) }}><Delete /></Button>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -97,7 +99,7 @@ function CreateEditDepartmentPageDialog({ refetch, departmentId }: {
     const typeString: string = departmentId ? "Update" : "Create new"
     return <Dialog>
         <DialogTrigger asChild>
-            <Button variant="default">        {departmentId ? <Pencil /> : <PlusCircle />}</Button>
+            <Button variant="default" title={`${typeString} department page`}>        {departmentId ? <Pencil /> : <PlusCircle />}</Button>
         </DialogTrigger>
         <DialogContent className="min-w-fit overflow-auto">
             <DialogHeader>

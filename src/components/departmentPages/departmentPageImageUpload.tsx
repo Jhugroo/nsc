@@ -25,7 +25,7 @@ export function DepartmentPageImageUpload({ id }: {
 
     return <Dialog>
         <DialogTrigger asChild>
-            <Button variant="secondary" ><BookImage /></Button>
+            <Button variant="secondary" title="Upload images to department"><BookImage /></Button>
         </DialogTrigger>
         <DialogContent className="min-w-full  max-h-screen overflow-auto">
 
