@@ -45,8 +45,8 @@ export default function DepartmentPageTable() {
         }
     });
     const switchDepartmentPageActivation = api.departmentPage.switchActive.useMutation({
-        onSuccess: () => {
-            toast.success('department switched successfully')
+        onSuccess: (switchedState) => {
+            toast.success(`department ${switchedState.title} ${switchedState.activated ? 'A' : 'Dea'}ctived successfully`)
             void refetch()
         },
         onError: () => {
@@ -76,7 +76,7 @@ export default function DepartmentPageTable() {
                             <TableCell className="font-medium space-x-2">
                                 <Button title={departments !== undefined && departments.length > 0
                                     ? `Activate this page for ${departments.find(({ id }) => id === singleDepartmentPage.departmentId)?.label ?? 'Unknown Department'}`
-                                    : 'Department page is not linked to any department'} className={`${singleDepartmentPage.activated && "bg-green-500 hover:bg-green-600"}`} onClick={() => { switchDepartmentPageActivation.mutate({ id: singleDepartmentPage.id, departmentId: singleDepartmentPage.departmentId ?? '' }) }} disabled={singleDepartmentPage.activated} variant="outline">{singleDepartmentPage.activated ? <ShieldCheck /> : <ShieldPlus />}</Button>
+                                    : 'Department page is not linked to any department'} className={`${singleDepartmentPage.activated && "bg-green-500 hover:bg-green-600"}`} onClick={() => { switchDepartmentPageActivation.mutate({ id: singleDepartmentPage.id, departmentId: singleDepartmentPage.departmentId ?? '', activated: singleDepartmentPage.activated }) }} variant="outline">{singleDepartmentPage.activated ? <ShieldCheck /> : <ShieldPlus />}</Button>
                                 <CreateEditDepartmentPageDialog refetch={refetch} departmentId={singleDepartmentPage.id} />
                                 <DepartmentPageImageUpload id={singleDepartmentPage.id} />
                                 <Button title="Delete department page" variant="destructive" onClick={() => { deleteDepartmentPage.mutate(singleDepartmentPage.id) }}><Delete /></Button>

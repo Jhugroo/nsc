@@ -22,6 +22,7 @@ export const departmentPageRouter = createTRPCRouter({
       startDate.setHours(0, 0, 0, 0);
 
       return await ctx.db.departmentPage.findMany({
+        where: { activated: true },
         take: !input ? 50 : input.take > 50 ? 50 : input.take,
         orderBy: { createdAt: "desc" },
         include: { image: true, Department: { select: { label: true } } },
@@ -106,6 +107,7 @@ export const departmentPageRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         departmentId: z.string(),
+        activated: z.boolean(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -117,7 +119,7 @@ export const departmentPageRouter = createTRPCRouter({
       });
       return await ctx.db.departmentPage.update({
         where: { id: input.id },
-        data: { activated: true },
+        data: { activated: !input.activated },
       });
     }),
   updateById: protectedProcedure
