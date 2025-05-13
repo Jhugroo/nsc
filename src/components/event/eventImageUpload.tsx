@@ -17,6 +17,7 @@ type imageType = {
     eventId: string | null;
     createdById: string;
 }
+import { BookImage } from "lucide-react";
 export function EventUploadImage({ id }: {
     id: string,
 }) {
@@ -24,10 +25,9 @@ export function EventUploadImage({ id }: {
 
     return <Dialog>
         <DialogTrigger asChild>
-            <Button variant="secondary" >Images</Button>
+            <Button variant="secondary" title="Upload images to event"><BookImage /></Button>
         </DialogTrigger>
         <DialogContent className="min-w-full  max-h-screen overflow-auto">
-
             <DialogHeader>
                 <DialogTitle className="text-left">
                     <h1 className="text-2xl font-bold">Upload Images</h1>

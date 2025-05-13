@@ -8,6 +8,7 @@ import { api } from "@/utils/api"
 import { Badge } from "../ui/badge";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
+import { BookImage } from "lucide-react";
 type imageType = {
     id: string;
     key: string;
@@ -24,7 +25,7 @@ export function DepartmentPageImageUpload({ id }: {
 
     return <Dialog>
         <DialogTrigger asChild>
-            <Button variant="secondary" >Images</Button>
+            <Button variant="secondary" title="Upload images to department"><BookImage /></Button>
         </DialogTrigger>
         <DialogContent className="min-w-full  max-h-screen overflow-auto">
 

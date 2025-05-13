@@ -69,9 +69,9 @@ export const departmentPageRouter = createTRPCRouter({
         .object({
           search: z.object({
             id: z.string().optional(),
-            title: z.string().min(1),
-            eventDate: z.number(),
-            description: z.string(),
+            title: z.string().min(1).optional(),
+            eventDate: z.number().optional(),
+            description: z.string().optional(),
             link: z.string().optional(),
             departmentId: z.string().optional(),
           }),
@@ -101,7 +101,25 @@ export const departmentPageRouter = createTRPCRouter({
         orderBy: { createdAt: "desc" },
       });
     }),
-
+  switchActive: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        departmentId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.session.user?.isVerified)
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      await ctx.db.departmentPage.updateMany({
+        where: { departmentId: input.departmentId },
+        data: { activated: false },
+      });
+      return await ctx.db.departmentPage.update({
+        where: { id: input.id },
+        data: { activated: true },
+      });
+    }),
   updateById: protectedProcedure
     .input(
       z.object({
