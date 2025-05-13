@@ -105,10 +105,11 @@ model Event {
 }
 
 model Department {
-    id             String           @id @default(cuid())
-    code           String
-    label          String
-    users          User[]
+    id    String @id @default(cuid())
+    code  String
+    label String
+    users User[]
+
     DepartmentPage DepartmentPage[]
     Event          Event[]
 }
@@ -120,6 +121,7 @@ model DepartmentPage {
     description  String
     location     String?
     link         String?
+    activated    Boolean     @default(false)
     Department   Department? @relation(fields: [departmentId], references: [id])
     departmentId String?
     createdBy    User        @relation(fields: [createdById], references: [id])

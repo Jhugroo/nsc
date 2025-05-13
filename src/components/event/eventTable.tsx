@@ -16,7 +16,7 @@ import { EventUploadImage } from "./eventImageUpload";
 import { dateFormatterDisplay } from "@/lib/utils";
 import { useDepartmentsStore } from "@/state/department";
 import { useEffect } from "react";
-
+import { Delete, Pen, Pencil, PlusCircle, ShieldCheck, ShieldPlus } from "lucide-react";
 export default function EventTable() {
     const { data: event, isLoading, refetch } = api.event.get.useQuery()
     const { data: departments } = api.department.get.useQuery()
@@ -56,7 +56,7 @@ export default function EventTable() {
                             <TableCell className="font-medium space-x-2">
                                 <CreateEditEventDialog refetch={refetch} eventId={singleEvent.id} />
                                 <EventUploadImage id={singleEvent.id} />
-                                <Button variant="destructive" onClick={() => { deleteEvent.mutate(singleEvent.id) }}>Delete</Button>
+                                <Button variant="destructive" onClick={() => { deleteEvent.mutate(singleEvent.id) }}><Delete /></Button>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -74,7 +74,7 @@ function CreateEditEventDialog({ refetch, eventId }: {
     const typeString: string = eventId ? "Update" : "Create new"
     return <Dialog>
         <DialogTrigger asChild>
-            <Button variant="default">{typeString} event</Button>
+            <Button variant="default">{eventId ? <Pencil /> : <PlusCircle />}</Button>
         </DialogTrigger>
         <DialogContent className="min-w-fit overflow-auto">
             <DialogHeader>
