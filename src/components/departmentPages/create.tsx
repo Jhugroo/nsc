@@ -9,7 +9,7 @@ import type * as DialogPrimitive from "@radix-ui/react-dialog"
 import AutocompleteField from "../ui/custom/autocomplete";
 import { useDepartmentsStore } from "@/state/department";
 import { DepartmentPageImageUpload } from "./departmentPageImageUpload";
-import { CheckCircle, Save } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 type createDepartmentPageType = {
     id: string;
     title: string;
