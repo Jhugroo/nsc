@@ -10,6 +10,7 @@ import AutocompleteField from "../ui/custom/autocomplete";
 import { useDepartmentsStore } from "@/state/department";
 import { DepartmentPageImageUpload } from "./departmentPageImageUpload";
 import { CheckCircle } from "lucide-react";
+import FormSkeleton from "../ui/custom/form-skeleton";
 type createDepartmentPageType = {
     id: string;
     title: string;
@@ -29,7 +30,7 @@ export default function CreateDepartementPage({ id, refetcher, CloseTrigger }: {
     CloseTrigger: React.ForwardRefExoticComponent<DialogPrimitive.DialogTriggerProps & React.RefAttributes<HTMLButtonElement>>
 }) {
     const { departments } = useDepartmentsStore()
-    const { data: updateDepartmentPageQuery, refetch } = api.departmentPage.getById.useQuery({ id: id });
+    const { data: updateDepartmentPageQuery, refetch, isLoading } = api.departmentPage.getById.useQuery({ id: id });
     const [data, setData] = useState(initialiseDepartmentPage)
     useEffect(() => {
         if (updateDepartmentPageQuery && id) {
@@ -50,7 +51,7 @@ export default function CreateDepartementPage({ id, refetcher, CloseTrigger }: {
             toast.success('Department page ' + createdDepartmentPage.title + ' created successfully')
         },
         onError: () => {
-            toast.error("Department page could not be created, please fill out all fields correctly")
+            toast.error("Department page could not be created, please fill out all fields correctly or you may not have sufficient authority")
         }
     });
     const updateDepartmentPage = api.departmentPage.updateById.useMutation({
@@ -58,6 +59,9 @@ export default function CreateDepartementPage({ id, refetcher, CloseTrigger }: {
             refetcher ? void refetcher() : null;
             toast.success('DepartmentPage ' + updatedDepartmentPage.title + ' updated successfully')
             void refetch()
+        },
+        onError: () => {
+            toast.error("Department page could not be updated, please fill out all fields correctly or you may not have sufficient authority")
         }
     })
     const updateDataFields = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
@@ -74,6 +78,7 @@ export default function CreateDepartementPage({ id, refetcher, CloseTrigger }: {
             createDepartmentPage.mutate(data);
         }
     }
+    if (isLoading) return <FormSkeleton />
     return (
         <div >
             <div className="p-1">

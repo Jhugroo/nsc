@@ -8,6 +8,28 @@ import {
 import { TRPCError } from "@trpc/server";
 import { UTApi } from "uploadthing/server";
 export const utapi = new UTApi();
+
+const isUserAllowed = (
+  user: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  } & {
+    id: string;
+    location: string;
+    isAdmin: boolean;
+    isVerified: boolean;
+    locations: { id: number; code: string; label: string }[];
+    departmentId: string;
+  },
+  departmentId: string | undefined | null,
+) => {
+  if (user.isAdmin) return true;
+  if (user.isVerified && (user.departmentId === departmentId || !departmentId))
+    return true;
+  throw new TRPCError({ code: "UNAUTHORIZED" });
+};
+
 export const departmentPageRouter = createTRPCRouter({
   getDisplayDepartmentPages: publicProcedure
     .input(
@@ -18,9 +40,6 @@ export const departmentPageRouter = createTRPCRouter({
         .optional(),
     )
     .query(async ({ ctx, input }) => {
-      const startDate = new Date();
-      startDate.setHours(0, 0, 0, 0);
-
       return await ctx.db.departmentPage.findMany({
         where: { activated: true },
         take: !input ? 50 : input.take > 50 ? 50 : input.take,
@@ -49,8 +68,7 @@ export const departmentPageRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session.user?.isVerified)
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+      isUserAllowed(ctx.session.user, input.departmentId);
       const { departmentId: _, ...filteredInput } = input;
       return await ctx.db.departmentPage.create({
         data: {
@@ -80,6 +98,7 @@ export const departmentPageRouter = createTRPCRouter({
         .optional(),
     )
     .query(async ({ ctx, input }) => {
+      isUserAllowed(ctx.session.user, input?.search.departmentId);
       const forceSearchByDepartmentIfNotAdmin = ctx.session.user?.isAdmin ===
         false && {
         departmentId: ctx.session.user?.departmentId ?? undefined,
@@ -111,8 +130,7 @@ export const departmentPageRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session.user?.isVerified)
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+      isUserAllowed(ctx.session.user, input.departmentId);
       await ctx.db.departmentPage.updateMany({
         where: { departmentId: input.departmentId },
         data: { activated: false },
@@ -133,9 +151,7 @@ export const departmentPageRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session.user?.isVerified)
-        throw new TRPCError({ code: "UNAUTHORIZED" });
-
+      isUserAllowed(ctx.session.user, input.departmentId);
       return await ctx.db.departmentPage.update({
         where: { id: input.id },
         data: {
@@ -159,15 +175,19 @@ export const departmentPageRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session.user?.isVerified) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
-      }
+      const departmentId = await ctx.db.departmentPage.findFirst({
+        where: { id: input },
+        select: { departmentId: true },
+      });
+
+      isUserAllowed(ctx.session.user, departmentId?.departmentId);
+
       const images = await ctx.db.image.findMany({
         where: { departmentPageId: input },
         select: { key: true },
       });
 
-      images.map(({ key }) => void utapi.deleteFiles(key));
+      void utapi.deleteFiles(images.map(({ key }) => key));
 
       return await ctx.db.departmentPage.delete({
         where: { id: input },
@@ -177,8 +197,14 @@ export const departmentPageRouter = createTRPCRouter({
   deleteImage: protectedProcedure
     .input(z.object({ id: z.string(), key: z.string() }))
     .mutation(async ({ ctx, input: { id, key } }) => {
-      if (!ctx.session.user?.isVerified)
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+      const departmentId = await ctx.db.image.findFirst({
+        where: { id },
+        select: { DepartmentPage: { select: { departmentId: true } } },
+      });
+      isUserAllowed(
+        ctx.session.user,
+        departmentId?.DepartmentPage?.departmentId,
+      );
 
       void utapi.deleteFiles(key);
       return ctx.db.image.delete({ where: { id: id } });
@@ -200,7 +226,11 @@ export const departmentPageRouter = createTRPCRouter({
     .mutation(async ({ ctx, input: { id, files } }) => {
       if (!ctx.session.user?.isVerified)
         throw new TRPCError({ code: "UNAUTHORIZED" });
-
+      const departmentId = await ctx.db.departmentPage.findFirst({
+        where: { id },
+        select: { departmentId: true },
+      });
+      isUserAllowed(ctx.session.user, departmentId?.departmentId);
       return await ctx.db.departmentPage.update({
         where: { id: id },
         data: {

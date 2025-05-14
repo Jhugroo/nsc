@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { api } from "@/utils/api"
 import type * as DialogPrimitive from "@radix-ui/react-dialog"
-type createdepartmentType = { id: string; code: string; label: string }
-const initialiseDepartment: createdepartmentType = { id: '', code: '', label: '' };
+type createdepartmentType = { id: string; code?: string; label: string }
+const initialiseDepartment: createdepartmentType = { id: '', label: '' };
 
 export default function CreateDepartment(updateData: {
     id?: string, refetcher?: () => void,
@@ -53,12 +53,12 @@ export default function CreateDepartment(updateData: {
     return (
         <>
             <div className="p-1">
-                <Label htmlFor="code">Code</Label>
-                <Input id="code" disabled={updateData.id ? true : false} name="code" value={data.code} onChange={(e) => { updateDataFields(e); }} />
-            </div>
-            <div className="p-1">
                 <Label htmlFor="label">Label</Label>
                 <Input id="label" name="label" value={data.label} onChange={(e) => { updateDataFields(e); }} />
+            </div>
+            <div className="p-1">
+                <Label htmlFor="code">Code</Label>
+                <Input id="code" disabled={updateData.id ? true : false} name="code" value={data.code} onChange={(e) => { updateDataFields(e); }} />
             </div>
             <div className="p-1">
                 <updateData.CloseTrigger asChild>

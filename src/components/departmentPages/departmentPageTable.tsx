@@ -42,7 +42,7 @@ export default function DepartmentPageTable() {
             void refetch()
         },
         onError: () => {
-            toast.error("An error occurred while deleting the department")
+            toast.error("An error occurred while deleting the department, you may not have suffieicent authorization")
         }
     });
     const switchDepartmentPageActivation = api.departmentPage.switchActive.useMutation({
@@ -51,7 +51,7 @@ export default function DepartmentPageTable() {
             void refetch()
         },
         onError: () => {
-            toast.error("An error occurred while switching the department")
+            toast.error("An error occurred while switching the department, you may not have sufficient authority")
         }
     });
     return (

@@ -4,7 +4,7 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 export const departmentRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(z.object({ code: z.string().min(1), label: z.string().min(1) }))
+    .input(z.object({ code: z.string().optional(), label: z.string().min(2) }))
     .mutation(async ({ ctx, input }) => {
       if (!ctx.session.user?.isAdmin) {
         throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -12,6 +12,14 @@ export const departmentRouter = createTRPCRouter({
       return await ctx.db.department.create({
         data: {
           ...input,
+          code:
+            !input.code || input.code.length <= 0
+              ? input.label
+                  .replace(/[^\x00-\x7F]/g, "")
+                  .replace(/[^a-zA-Z0-9\s]/g, "")
+                  .replace(/\s+/g, "_")
+                  .toLowerCase()
+              : input.code,
         },
       });
     }),
@@ -36,7 +44,7 @@ export const departmentRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        code: z.string().min(1),
+        code: z.string().optional(),
         label: z.string().min(1),
       }),
     )
@@ -48,6 +56,14 @@ export const departmentRouter = createTRPCRouter({
         where: { id: input.id },
         data: {
           ...input,
+          code:
+            !input.code || input.code.length <= 0
+              ? input.label
+                  .replace(/[^\x00-\x7F]/g, "")
+                  .replace(/[^a-zA-Z0-9\s]/g, "")
+                  .replace(/\s+/g, "_")
+                  .toLowerCase()
+              : input.code,
         },
       });
     }),
