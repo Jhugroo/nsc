@@ -19,6 +19,8 @@ import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { LoadingSpinner } from "@/components/ui/custom/spinner"
+import { Badge } from "@/components/ui/badge"
+import { CheckCircle2, CircleUser } from "lucide-react"
 type userType = {
     id: string;
     name: string | null;
@@ -52,6 +54,8 @@ export default function ProfilePage() {
                 <CardDescription>
                     {!isLoading ? (
                         <>
+                            {user?.isAdmin && <Badge variant="destructive" className="mr-2">Admin <CircleUser className="mx-2" /></Badge>}
+                            {user?.isVerified && <Badge variant="secondary" >Verified<CheckCircle2 className="mx-2" /></Badge>}
                             <div className="p-1">
                                 <Label ><strong>Department:</strong> {(user?.Department as { label: string } | null)?.label ?? 'N/A'}</Label>
                             </div>

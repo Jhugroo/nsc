@@ -19,9 +19,10 @@ import {
   ArrowRight,
 } from "lucide-react";
 import EventsList from "@/components/event/eventlist";
+import { signIn, useSession } from "next-auth/react";
 
 export default function Component() {
-
+  const { data: sessionData } = useSession();
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <main className="flex-1">
@@ -48,9 +49,7 @@ export default function Component() {
               <Button size="lg" variant="destructive">
                 Get Involved
               </Button>
-              <Button size="lg" variant="secondary" >
-                Learn More
-              </Button>
+              {sessionData ? <Link href="/profile" ><Button size="lg" variant="secondary" >My Profile</Button></Link> : <Button variant="secondary" size="lg" onClick={() => void signIn('google')}>Sign up</Button>}
             </div>
           </div>
         </section>
