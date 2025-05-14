@@ -10,7 +10,7 @@ import { dateFormatter } from "@/lib/utils";
 import AutocompleteField from "../ui/custom/autocomplete";
 import { useDepartmentsStore } from "@/state/department";
 import { EventUploadImage } from "./eventImageUpload";
-import { Check, CheckCircle, Save } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 type createEventType = {
     id: string;
     title: string;
