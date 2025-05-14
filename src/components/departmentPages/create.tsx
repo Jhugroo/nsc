@@ -8,6 +8,8 @@ import { Textarea } from "../ui/textarea";
 import type * as DialogPrimitive from "@radix-ui/react-dialog"
 import AutocompleteField from "../ui/custom/autocomplete";
 import { useDepartmentsStore } from "@/state/department";
+import { DepartmentPageImageUpload } from "./departmentPageImageUpload";
+import { CheckCircle, Save } from "lucide-react";
 type createDepartmentPageType = {
     id: string;
     title: string;
@@ -95,11 +97,13 @@ export default function CreateDepartementPage({ id, refetcher, CloseTrigger }: {
                 <Label htmlFor="link">Link</Label>
                 <Input id="link" name="link" value={data.link} onChange={(e) => { updateDataFields(e); }} />
             </div>
-            <div className="p-1">
+            <div className="p-1 float-right space-x-2">
+                {id && <DepartmentPageImageUpload id={id} />}
                 <CloseTrigger asChild>
-                    <Button onClick={() => save()}>Save</Button>
+                    <Button onClick={() => save()} variant="secondary" className="bg-green-500 hover hover:bg-green-600"><CheckCircle /></Button>
                 </CloseTrigger>
             </div>
+
         </div >
     )
 }
