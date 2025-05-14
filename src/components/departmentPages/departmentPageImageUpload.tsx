@@ -49,6 +49,9 @@ function ImageUploaderViewer({ id, titleSetter }: { id: string, titleSetter: (ti
             toast.success("Image added successfully")
             refetch && void refetch()
         },
+        onError: () => {
+            toast.error("Image could not be added, please ensure you have correct accesses")
+        },
     })
     useEffect(() => {
         titleSetter(images?.title ?? '')
@@ -75,7 +78,10 @@ function ImageList({ images, refetch }: {
         onSuccess: () => {
             toast.success("Image deleted")
             refetch && void refetch()
-        }
+        },
+        onError: () => {
+            toast.error("Image could not be deleted, please ensure you have correct accesses")
+        },
     })
     return <section className="grid grid-cols-1 gap-6 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:p-6">
         {images?.map((image) => {

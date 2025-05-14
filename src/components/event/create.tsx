@@ -11,6 +11,7 @@ import AutocompleteField from "../ui/custom/autocomplete";
 import { useDepartmentsStore } from "@/state/department";
 import { EventUploadImage } from "./eventImageUpload";
 import { CheckCircle } from "lucide-react";
+import FormSkeleton from "../ui/custom/form-skeleton";
 type createEventType = {
     id: string;
     title: string;
@@ -34,7 +35,7 @@ export default function CreateEvent({ id, refetcher, CloseTrigger }: {
     CloseTrigger: React.ForwardRefExoticComponent<DialogPrimitive.DialogTriggerProps & React.RefAttributes<HTMLButtonElement>>
 }) {
     const { departments } = useDepartmentsStore()
-    const { data: updateEventQuery, refetch } = api.event.getById.useQuery({ id: id });
+    const { data: updateEventQuery, refetch, isLoading } = api.event.getById.useQuery({ id: id });
     const [data, setData] = useState(initialiseEvent)
     useEffect(() => {
         if (updateEventQuery && id) {
@@ -81,6 +82,7 @@ export default function CreateEvent({ id, refetcher, CloseTrigger }: {
             createEvent.mutate(data);
         }
     }
+    if (isLoading) return <FormSkeleton />
     return (
         <div >
             <div className="p-1">
