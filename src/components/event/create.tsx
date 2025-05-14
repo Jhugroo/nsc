@@ -9,6 +9,8 @@ import type * as DialogPrimitive from "@radix-ui/react-dialog"
 import { dateFormatter } from "@/lib/utils";
 import AutocompleteField from "../ui/custom/autocomplete";
 import { useDepartmentsStore } from "@/state/department";
+import { EventUploadImage } from "./eventImageUpload";
+import { Check, CheckCircle, Save } from "lucide-react";
 type createEventType = {
     id: string;
     title: string;
@@ -106,11 +108,14 @@ export default function CreateEvent({ id, refetcher, CloseTrigger }: {
                 <Label htmlFor="link">Registration Link</Label>
                 <Input id="link" name="link" value={data.link} onChange={(e) => { updateDataFields(e); }} />
             </div>
-            <div className="p-1">
+            <div className="p-1 float-right space-x-2">
+                {id && <EventUploadImage id={id} />}
                 <CloseTrigger asChild>
-                    <Button onClick={() => save()}>Save</Button>
+                    <Button onClick={() => save()} variant="secondary" className="bg-green-500 hover hover:bg-green-600"><CheckCircle /></Button>
                 </CloseTrigger>
             </div>
+
+
         </div >
     )
 }

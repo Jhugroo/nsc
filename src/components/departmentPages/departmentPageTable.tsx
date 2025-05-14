@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { useDepartmentsStore } from "@/state/department";
 import AutocompleteField from "../ui/custom/autocomplete";
 import { Delete, Pencil, PlusCircle, ShieldCheck, ShieldPlus } from "lucide-react";
+import { LoadingSpinner } from "../ui/custom/spinner";
 
 
 export default function DepartmentPageTable() {
@@ -27,7 +28,7 @@ export default function DepartmentPageTable() {
     const { data: departments } = api.department.get.useQuery(undefined, {
         enabled: isCurrentUserAdmin === true,
     })
-    const { data: departmentPages, isLoading, refetch } = api.departmentPage.get.useQuery({ search: { departmentId: currentDepartment } })
+    const { data: departmentPages, isLoading, refetch, isRefetching } = api.departmentPage.get.useQuery({ search: { departmentId: currentDepartment } })
 
     const { setDepartments } = useDepartmentsStore()
     useEffect(() => {
@@ -66,6 +67,8 @@ export default function DepartmentPageTable() {
                 <TableHeader>
                     <TableRow>
                         <TableHead >Title</TableHead>
+                        <TableHead >Usage</TableHead>
+                        <TableHead >Images</TableHead>
                         <TableHead >Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -73,12 +76,20 @@ export default function DepartmentPageTable() {
                     {!isLoading && departmentPages?.map((singleDepartmentPage) => (
                         <TableRow key={singleDepartmentPage.id}>
                             <TableCell className="font-medium">{singleDepartmentPage.title}</TableCell>
-                            <TableCell className="font-medium space-x-2">
-                                <Button title={departments !== undefined && departments.length > 0
+                            <TableCell className="font-medium">
+                                <Button disabled={(switchDepartmentPageActivation.isLoading || isRefetching)} title={departments !== undefined && departments.length > 0
                                     ? `Activate this page for ${departments.find(({ id }) => id === singleDepartmentPage.departmentId)?.label ?? 'Unknown Department'}`
-                                    : 'Department page is not linked to any department'} className={`${singleDepartmentPage.activated && "bg-green-500 hover:bg-green-600"}`} onClick={() => { switchDepartmentPageActivation.mutate({ id: singleDepartmentPage.id, departmentId: singleDepartmentPage.departmentId ?? '', activated: singleDepartmentPage.activated }) }} variant="outline">{singleDepartmentPage.activated ? <ShieldCheck /> : <ShieldPlus />}</Button>
-                                <CreateEditDepartmentPageDialog refetch={refetch} departmentId={singleDepartmentPage.id} />
+                                    : 'Department page is not linked to any department'} className={`${singleDepartmentPage.activated && "bg-green-500 hover:bg-green-600"}`}
+                                    onClick={() => { switchDepartmentPageActivation.mutate({ id: singleDepartmentPage.id, departmentId: singleDepartmentPage.departmentId ?? '', activated: singleDepartmentPage.activated }) }}
+                                    variant="outline">{(switchDepartmentPageActivation.isLoading || isRefetching) ? <LoadingSpinner /> :
+                                        singleDepartmentPage.activated ? <ShieldCheck /> : <ShieldPlus />}
+                                </Button>
+                            </TableCell>
+                            <TableCell className="font-medium">
                                 <DepartmentPageImageUpload id={singleDepartmentPage.id} />
+                            </TableCell>
+                            <TableCell className="font-medium space-x-2">
+                                <CreateEditDepartmentPageDialog refetch={refetch} departmentId={singleDepartmentPage.id} />
                                 <Button title="Delete department page" variant="destructive" onClick={() => { deleteDepartmentPage.mutate(singleDepartmentPage.id) }}><Delete /></Button>
                             </TableCell>
                         </TableRow>

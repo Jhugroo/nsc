@@ -45,6 +45,7 @@ export default function EventTable() {
                     <TableRow>
                         <TableHead >Title</TableHead>
                         <TableHead >Event Date</TableHead>
+                        <TableHead >Images</TableHead>
                         <TableHead >Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -53,9 +54,11 @@ export default function EventTable() {
                         <TableRow key={singleEvent.id}>
                             <TableCell className="font-medium">{singleEvent.title}</TableCell>
                             <TableCell className="font-medium">{dateFormatterDisplay(singleEvent.eventDate)}</TableCell>
+                            <TableCell className="font-medium">
+                                <EventUploadImage id={singleEvent.id} />
+                            </TableCell>
                             <TableCell className="font-medium space-x-2">
                                 <CreateEditEventDialog refetch={refetch} eventId={singleEvent.id} />
-                                <EventUploadImage id={singleEvent.id} />
                                 <Button title="Delete Event" variant="destructive" onClick={() => { deleteEvent.mutate(singleEvent.id) }}><Delete /></Button>
                             </TableCell>
                         </TableRow>
