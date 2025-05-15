@@ -15,7 +15,7 @@ import Link from "next/link";
 export default function AdminDashboardPage() {
     return <div className="w-full grid grid-flow-row-dense md:grid-cols-4 sm:grid-cols-2">{adminLinks.map((adminLink) => <MenuCardOption adminLink={adminLink} key={adminLink.link} />)}
         <Link href={"/"} className="w-48">
-            <Card className="bg-muted border-2 border-themeStyle m-4 w-48">
+            <Card className="bg-muted border-2 border-theme-style m-4 w-48">
                 <CardHeader>
                     <CardTitle className="flex">
                         <Avatar className="h-8 w-8">
@@ -41,7 +41,7 @@ function MenuCardOption({ adminLink: { link, Icon, text } }: {
 }) {
     return (
         <Link href={"/admin" + link} className="w-48">
-            <Card className="bg-muted border-2 border-themeStyle m-4 w-48">
+            <Card className="bg-muted border-2 border-theme-style m-4 w-48">
                 <CardHeader>
                     <CardTitle className="flex">
                         <Avatar className="h-8 w-8">

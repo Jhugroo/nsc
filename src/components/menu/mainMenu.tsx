@@ -28,13 +28,16 @@ export const adminLinks = [
   { link: "/event", Icon: CalendarCheck2Icon, text: "Events" },
   { link: "/department", Icon: Building, text: "Department List" },
 ]
-const verifiedLinks: {
-  link: string;
-  Icon: LucideIcon;
-  text: string;
-}[] = [
-    { link: "/admin/department-pages", Icon: CalendarCheck2Icon, text: "Department Pages" },
-  ]
+
+const verifiedLinks = [
+  { link: "/admin/department-pages", Icon: CalendarCheck2Icon, text: "Department Pages" },
+]
+
+const links = [
+  { link: "/departments", Icon: Building, text: "Departments" },
+  { link: "/events", Icon: CalendarCheck2Icon, text: "Events" },
+  { link: "/about", Icon: Blocks, text: "About Us" },
+]
 
 export function MainMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,15 +50,13 @@ export function MainMenu() {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" className=" text-themeStyle" ><Menu /></Button>
+        <Button variant="ghost" className=" text-theme-style" ><Menu /></Button>
       </SheetTrigger>
       <SheetContent className="w-fit">
         <SheetTitle onClick={() => closeMenu()}>
           <div className="flex mt-4"><Link href="/"><Button variant="ghost"><Image src={logo} className='h-[2rem] w-[12rem]' quality={100} alt='product preview' /></Button></Link><ModeToggle /></div>
 
-          <MenuLink href="/departments" pathname={pathname} Icon={Building} text="Departments" />
-          <MenuLink href="/events" pathname={pathname} Icon={CalendarCheck2Icon} text="Events" />
-          <MenuLink href="/about" pathname={pathname} Icon={Blocks} text="About Us" />
+          {links.map((link) => <MenuLink href={link.link} pathname={pathname} Icon={link.Icon} text={link.text} key={link.link} />)}
           {(user?.isVerified ?? user?.isAdmin) && <>
             <MenuItem itemKey="verifiedTab" Icon={Shield} text="Verified Section" key="verifiedTab" noLink={true} />
             {verifiedLinks.map((verifiedLink) => <MenuLink href={verifiedLink.link} pathname={pathname} Icon={verifiedLink.Icon} text={verifiedLink.text} key={verifiedLink.link} />)}

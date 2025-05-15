@@ -3,10 +3,10 @@ import { withUt } from "uploadthing/tw";
 export default withUt({
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
   theme: {
     container: {
@@ -18,7 +18,7 @@ export default withUt({
     },
     extend: {
       colors: {
-        themeStyle: "hsl(var(--text-for-homepage))",
+        "theme-style": "hsl(var(--text-for-homepage))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -88,21 +88,21 @@ export default withUt({
         },
         "fade-in": {
           "0%": {
-            opacity: 0
+            opacity: 0,
           },
           "100%": {
-            opacity: 1
+            opacity: 1,
           },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "slide-in-right": 'slide-in-right 1s ease-in-out 0.25s 1',
-        "fade-in-right": 'fade-in-right 1s ease-in-out 0.25s 1',
-        "fade-in": 'fade-in 1s ease-in-out 0.25s 1',
+        "slide-in-right": "slide-in-right 1s ease-in-out 0.25s 1",
+        "fade-in-right": "fade-in-right 1s ease-in-out 0.25s 1",
+        "fade-in": "fade-in 1s ease-in-out 0.25s 1",
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
-})
+});
