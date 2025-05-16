@@ -20,9 +20,10 @@ import {
 } from "lucide-react";
 import EventsList from "@/components/event/eventlist";
 import { signIn, useSession } from "next-auth/react";
+import { LoadingSpinner } from "@/components/ui/custom/spinner";
 
 export default function Component() {
-  const { data: sessionData } = useSession();
+  const { data: sessionData, status } = useSession();
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <main className="flex-1">
@@ -49,7 +50,7 @@ export default function Component() {
               <Button size="lg" variant="destructive">
                 Get Involved
               </Button>
-              {sessionData ? <Link href="/profile" ><Button size="lg" variant="secondary" >My Profile</Button></Link> : <Button variant="secondary" size="lg" onClick={() => void signIn('google')}>Sign up</Button>}
+              {status === 'loading' ? <Button size="lg" variant="secondary" ><LoadingSpinner /></Button> : sessionData ? <Link href="/profile" ><Button size="lg" variant="secondary" >My Profile</Button></Link> : <Button variant="secondary" size="lg" onClick={() => void signIn('google')}>Sign up</Button>}
             </div>
           </div>
         </section>
