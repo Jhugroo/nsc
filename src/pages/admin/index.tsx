@@ -23,7 +23,6 @@ export default function AdminDashboardPage() {
                         </Avatar>
                         <span className="mt-1 ml-2">  Home</span>
                     </CardTitle>
-
                     <CardDescription className="text-accent-foreground">Back to homepage </CardDescription>
                 </CardHeader>
                 <CardContent >
