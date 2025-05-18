@@ -60,6 +60,7 @@ model User {
     Image                 Image[]
     Event                 Event[]
     DepartmentPage        DepartmentPage[]
+    Initiatives           Initiatives[]
 }
 
 model VerificationToken {
@@ -128,4 +129,18 @@ model DepartmentPage {
     createdById  String
     createdAt    DateTime    @default(now())
     updatedAt    DateTime    @updatedAt
+}
+
+model Initiatives {
+    id          String   @id @default(cuid())
+    icon        String
+    iconColor   String   @default("blue-600")
+    title       String
+    description String
+    activated   Boolean  @default(false)
+    weight      Int
+    createdBy   User     @relation(fields: [createdById], references: [id])
+    createdById String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
 }

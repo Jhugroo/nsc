@@ -31,7 +31,7 @@ const isUserAllowed = (
 };
 
 export const departmentPageRouter = createTRPCRouter({
-  getDisplayDepartmentPages: publicProcedure
+  getDisplay: publicProcedure
     .input(
       z
         .object({

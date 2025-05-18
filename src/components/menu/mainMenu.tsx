@@ -17,7 +17,8 @@ import {
   Shield,
   Blocks,
   CalendarCheck2Icon,
-  Building
+  Building,
+  LockKeyhole,
 } from "lucide-react"
 import Image from 'next/image'
 import logo from '../../../public/logo.png'
@@ -27,6 +28,7 @@ export const adminLinks = [
   { link: "/view-users", Icon: Users, text: "Users" },
   { link: "/event", Icon: CalendarCheck2Icon, text: "Events" },
   { link: "/department", Icon: Building, text: "Department List" },
+  { link: "/miscellaneous", Icon: LockKeyhole, text: "Miscellaneous" },
 ]
 
 const verifiedLinks = [

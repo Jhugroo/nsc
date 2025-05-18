@@ -17,8 +17,8 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useDepartmentsStore } from "@/state/department";
 import AutocompleteField from "../ui/custom/autocomplete";
-import { Delete, Pencil, PlusCircle, ShieldCheck, ShieldPlus } from "lucide-react";
-import { LoadingSpinner } from "../ui/custom/spinner";
+import { Delete, Pencil, PlusCircle } from "lucide-react";
+import { Switch } from "../ui/switch";
 
 
 export default function DepartmentPageTable() {
@@ -77,13 +77,11 @@ export default function DepartmentPageTable() {
                         <TableRow key={singleDepartmentPage.id}>
                             <TableCell className="font-medium">{singleDepartmentPage.title}</TableCell>
                             <TableCell className="font-medium">
-                                <Button disabled={(switchDepartmentPageActivation.isLoading || isRefetching)} title={departments !== undefined && departments.length > 0
-                                    ? `Activate this page for ${departments.find(({ id }) => id === singleDepartmentPage.departmentId)?.label ?? 'Unknown Department'}`
-                                    : 'Department page is not linked to any department'} className={`${singleDepartmentPage.activated && "bg-green-500 hover:bg-green-600"}`}
-                                    onClick={() => { switchDepartmentPageActivation.mutate({ id: singleDepartmentPage.id, departmentId: singleDepartmentPage.departmentId ?? '', activated: singleDepartmentPage.activated }) }}
-                                    variant="outline">{(switchDepartmentPageActivation.isLoading || isRefetching) ? <LoadingSpinner /> :
-                                        singleDepartmentPage.activated ? <ShieldCheck /> : <ShieldPlus />}
-                                </Button>
+                                <Switch
+                                    disabled={switchDepartmentPageActivation.isLoading || isRefetching}
+                                    checked={singleDepartmentPage.activated}
+                                    onCheckedChange={() => { switchDepartmentPageActivation.mutate({ id: singleDepartmentPage.id, departmentId: singleDepartmentPage.departmentId ?? '', activated: singleDepartmentPage.activated }) }}
+                                />
                             </TableCell>
                             <TableCell className="font-medium">
                                 <DepartmentPageImageUpload id={singleDepartmentPage.id} />
