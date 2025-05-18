@@ -8,6 +8,12 @@ export default withUt({
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
   ],
+  safelist: [
+    "text-blue-600",
+    "text-red-600",
+    "text-green-600",
+    "text-yellow-600",
+  ],
   theme: {
     container: {
       center: true,
@@ -16,6 +22,7 @@ export default withUt({
         "2xl": "1400px",
       },
     },
+
     extend: {
       colors: {
         "theme-style": "hsl(var(--text-for-homepage))",

@@ -8,7 +8,7 @@ import { api } from "@/utils/api";
 import { LoadingSpinner } from "@/components/ui/custom/spinner";
 import Link from "next/link";
 export default function DepartmentPageList({ take = 100 }: { take?: number }) {
-    const { data: departmentData, isLoading } = api.departmentPage.getDisplayDepartmentPages.useQuery({ take: take })
+    const { data: departmentData, isLoading } = api.departmentPage.getDisplay.useQuery({ take: take })
     const blocks = departmentData?.map((department) => {
         return {
             title: department.title,
