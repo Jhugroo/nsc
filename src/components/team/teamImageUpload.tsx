@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { BookImage } from "lucide-react";
 import { type imageType } from "../type";
 
-export function DepartmentPageImageUpload({ id }: {
+export function TeamImageUpload({ id }: {
     id: string,
 }) {
     const [title, setTitle] = useState('title')
@@ -36,8 +36,8 @@ export function DepartmentPageImageUpload({ id }: {
 }
 
 function ImageUploaderViewer({ id, titleSetter }: { id: string, titleSetter: (title: string) => void }) {
-    const { data: images, refetch } = api.departmentPage.getById.useQuery({ id: id });
-    const uploadImage = api.departmentPage.addImage.useMutation({
+    const { data: images, refetch } = api.team.getById.useQuery({ id: id });
+    const uploadImage = api.team.addImage.useMutation({
         onSuccess: () => {
             toast.success("Image added successfully")
             refetch && void refetch()
@@ -67,7 +67,7 @@ function ImageList({ images, refetch }: {
     refetch?: () => void,
     images?: imageType[],
 }) {
-    const deleteImage = api.departmentPage.deleteImage.useMutation({
+    const deleteImage = api.team.deleteImage.useMutation({
         onSuccess: () => {
             toast.success("Image deleted")
             refetch && void refetch()

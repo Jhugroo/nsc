@@ -4,66 +4,57 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { api } from "@/utils/api"
-import { Textarea } from "../ui/textarea";
 import type * as DialogPrimitive from "@radix-ui/react-dialog"
-import AutocompleteField from "../ui/custom/autocomplete";
 import { CheckCircle } from "lucide-react";
 import FormSkeleton from "../ui/custom/form-skeleton";
-type createInitiativeType = {
+type createTeamMemberType = {
     id: string;
     title: string;
-    description: string;
-    icon: string;
-    iconColor: string;
+    name: string;
+    role: string;
     weight: number
     activated: boolean
 }
 
-const initialiseInitiave: createInitiativeType = {
+const initialiseTeamMember: createTeamMemberType = {
     id: '',
     title: '',
-    description: '',
-    icon: '',
-    iconColor: '',
+    name: '',
+    role: '',
     weight: 0,
     activated: true
 };
-const icons = [
-    { value: 'Calendar', label: 'Calendar' },
-    { value: 'Users', label: 'Users' },
-    { value: 'BookOpen', label: 'Book Open' },
-    { value: 'Award', label: 'Award' },
-]
+
 export default function CreateTeam({ id, refetcher, CloseTrigger }: {
     id?: string, refetcher?: () => void,
     CloseTrigger: React.ForwardRefExoticComponent<DialogPrimitive.DialogTriggerProps & React.RefAttributes<HTMLButtonElement>>
 }) {
-    const { data: updateInitiativeQuery, refetch, isLoading } = api.initiatives.getById.useQuery({ id: id });
-    const [data, setData] = useState(initialiseInitiave)
+    const { data: updateTeamMemberQuery, refetch, isLoading } = api.team.getById.useQuery({ id: id });
+    const [data, setData] = useState(initialiseTeamMember)
     useEffect(() => {
-        if (updateInitiativeQuery && id) {
-            setData(updateInitiativeQuery)
+        if (updateTeamMemberQuery && id) {
+            setData(updateTeamMemberQuery)
         }
-    }, [updateInitiativeQuery, id])
-    const createInitiave = api.initiatives.create.useMutation({
-        onSuccess: (createdInitiative) => {
-            setData(initialiseInitiave)
+    }, [updateTeamMemberQuery, id])
+    const createTeamMember = api.team.create.useMutation({
+        onSuccess: (createdTeamMember) => {
+            setData(initialiseTeamMember)
             refetcher ? void refetcher() : null;
             void refetch()
-            toast.success('Initiative ' + createdInitiative.title + ' created successfully')
+            toast.success('Team member ' + createdTeamMember.name + ' created successfully')
         },
         onError: () => {
-            toast.error("Initiative could not be created, please fill out all fields correctly or you may not have sufficient authority")
+            toast.error("Team member could not be created, please fill out all fields correctly or you may not have sufficient authority")
         }
     });
-    const updateInitiative = api.initiatives.updateById.useMutation({
-        onSuccess: (updateInitiative) => {
+    const updateTeamMember = api.team.updateById.useMutation({
+        onSuccess: (updateTeamMember) => {
             refetcher ? void refetcher() : null;
-            toast.success('Initiative ' + updateInitiative.title + ' updated successfully')
+            toast.success('Team member ' + updateTeamMember.name + ' updated successfully')
             void refetch()
         },
         onError: () => {
-            toast.error("Initiative could not be updated, please fill out all fields correctly or you may not have sufficient authority")
+            toast.error("Team member could not be updated, please fill out all fields correctly or you may not have sufficient authority")
         }
     })
     const updateDataFields = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
@@ -74,48 +65,29 @@ export default function CreateTeam({ id, refetcher, CloseTrigger }: {
     }
     function save() {
         if (data.id) {
-            updateInitiative.mutate(data);
+            updateTeamMember.mutate(data);
         }
         else {
-            createInitiave.mutate(data);
+            createTeamMember.mutate(data);
         }
     }
     if (isLoading) return <FormSkeleton />
     return (
         <div >
             <div className="p-1">
-                <table>
-                    <tr>
-                        <td >
-                            <AutocompleteField showLabel={true} displayName="Icon" hideInput={true} onValueChange={(e) => {
-                                setData({
-                                    ...data,
-                                    icon: e
-                                })
-                            }} value={data.icon} fieldName="icon"
-                                options={icons} />
-                        </td>
-                        <td>
-                            <div className="ml-2">
-                                <Label htmlFor="iconColor">Icon color</Label>
-                                <Input id="iconColor" name="iconColor" value={data.iconColor} onChange={(e) => { updateDataFields(e); }} />
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-
-
             </div>
             <div className="p-1">
                 <Label htmlFor="title">Title</Label>
                 <Input id="title" name="title" value={data.title} onChange={(e) => { updateDataFields(e); }} />
             </div>
-
             <div className="p-1">
-                <Label htmlFor="description">Description</Label>
-                <Textarea id="description" name="description" value={data.description} onChange={(e) => { updateDataFields(e); }} />
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" name="name" value={data.name} onChange={(e) => { updateDataFields(e); }} />
             </div>
-
+            <div className="p-1">
+                <Label htmlFor="role">Role</Label>
+                <Input id="role" name="role" value={data.role} onChange={(e) => { updateDataFields(e); }} />
+            </div>
             <div className="p-1 float-right space-x-2">
                 <CloseTrigger asChild>
                     <Button onClick={() => save()} variant="secondary" className="bg-green-500 hover hover:bg-green-600"><CheckCircle /></Button>

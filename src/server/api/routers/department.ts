@@ -6,9 +6,9 @@ export const departmentRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ code: z.string().optional(), label: z.string().min(2) }))
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session.user?.isAdmin) {
+      if (!ctx.session.user?.isAdmin)
         throw new TRPCError({ code: "UNAUTHORIZED" });
-      }
+
       return await ctx.db.department.create({
         data: {
           ...input,
@@ -25,9 +25,9 @@ export const departmentRouter = createTRPCRouter({
     }),
 
   get: protectedProcedure.query(async ({ ctx }) => {
-    if (!ctx.session.user?.isAdmin) {
+    if (!ctx.session.user?.isAdmin)
       throw new TRPCError({ code: "UNAUTHORIZED" });
-    }
+
     return await ctx.db.department.findMany();
   }),
 
@@ -49,9 +49,9 @@ export const departmentRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session.user?.isAdmin) {
+      if (!ctx.session.user?.isAdmin)
         throw new TRPCError({ code: "UNAUTHORIZED" });
-      }
+
       return await ctx.db.department.update({
         where: { id: input.id },
         data: {
@@ -75,9 +75,9 @@ export const departmentRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session.user?.isAdmin) {
+      if (!ctx.session.user?.isAdmin)
         throw new TRPCError({ code: "UNAUTHORIZED" });
-      }
+
       const departmentAction = input.departmentId
         ? { connect: { id: input.departmentId } }
         : { disconnect: { id: input.departmentId } };
@@ -92,12 +92,11 @@ export const departmentRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(z.object({ id: z.string().optional() }))
     .query(async ({ ctx, input: { id } }) => {
-      if (!ctx.session.user?.isAdmin) {
+      if (!ctx.session.user?.isAdmin)
         throw new TRPCError({ code: "UNAUTHORIZED" });
-      }
-      if (!id) {
-        return null;
-      }
+
+      if (!id) return null;
+
       return await ctx.db.department.findFirst({
         where: { id: id },
       });
