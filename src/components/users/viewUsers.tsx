@@ -15,11 +15,12 @@ import toast from "react-hot-toast";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { LoadingSpinner } from "../ui/custom/spinner";
-import { MailPlus, CircleEllipsis } from "lucide-react";
+import { MailPlus, CircleEllipsis, Plus } from "lucide-react";
 import PaginationNavigator from "../ui/custom/paginationNavigator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import SwitchDepartment from "./switchDepartment";
 import { Badge } from "../ui/badge";
+import { Switch } from "../ui/switch";
 type searchDataType = {
     verificationRequested?: boolean
     skip: number
@@ -60,7 +61,8 @@ export function ViewUsers() {
                         <TableHead >E-mail</TableHead>
                         <TableHead >Phone</TableHead>
                         <TableHead>Department</TableHead>
-                        <TableHead>Actions</TableHead>
+                        <TableHead hidden={searchData.verificationRequested}>Admin</TableHead>
+                        <TableHead>Verified</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -69,15 +71,26 @@ export function ViewUsers() {
                             <TableCell className="font-medium">{user.name} </TableCell>
                             <TableCell className="flex">{user.email} {user.email && <a className="pl-2" href={`mailto:${user.email}`}><MailPlus /></a>} </TableCell>
                             <TableCell>{user.phone}</TableCell>
-                            <TableCell ><Badge className="text-md" variant="outline">{(user.Department as { label: string } | null)?.label ?? 'N/A'}</Badge> {departments === undefined ? <LoadingSpinner /> : <ModifyDepartment departments={departments} user={({ ...user, name: user.name ?? 'N/A' })} refetch={refetch} />}</TableCell>
+                            <TableCell >{departments === undefined ? <LoadingSpinner /> : <ModifyDepartment departments={departments} user={({ ...user, name: user.name ?? 'N/A' })} refetch={refetch} />}</TableCell>
+                            <TableCell hidden={searchData.verificationRequested}>
+                                {user.id === currentUser.data?.user.id ? <>That's you!</> :
+                                    <Switch
+                                        disabled={disableButtons}
+                                        checked={user.isAdmin}
+                                        onCheckedChange={() => { toast.loading((user.isAdmin ? "Demot" : "Promot") + "ing user"); setDisableButtons(true); mutateUsers.mutate({ id: user.id, current: user.isAdmin ?? false, status: "isAdmin" }) }}
+                                    />
+                                }
+                            </TableCell>
                             <TableCell>
                                 {user.id === currentUser.data?.user.id ? <>That's you!</> : (
                                     searchData?.verificationRequested ? <Button disabled={disableButtons} onClick={() => { toast.loading("Confirming user"); setDisableButtons(true); mutateUsers.mutate({ id: user.id, current: false, status: "isVerified" }) }}>Accept</Button>
                                         :
-                                        <>
-                                            <Button variant={!user.isVerified ? "destructive" : "default"} className="mr-2" disabled={disableButtons} onClick={() => { toast.loading((user.isVerified ? "Unconfirm" : "Confirm") + "ing user"); setDisableButtons(true); mutateUsers.mutate({ id: user.id, current: user.isVerified ?? false, status: "isVerified" }) }}    >{user.isVerified ? "Unconfirm" : "Confirm"}</Button>
-                                            <Button variant={!user.isAdmin ? "destructive" : "default"} disabled={disableButtons} onClick={() => { toast.loading((user.isAdmin ? "Demot" : "Promot") + "ing user"); setDisableButtons(true); mutateUsers.mutate({ id: user.id, current: user.isAdmin ?? false, status: "isAdmin" }) }}>{user.isAdmin ? "Demote" : "Promote"}</Button>
-                                        </>)}
+                                        <Switch
+                                            disabled={disableButtons}
+                                            checked={user.isVerified}
+                                            onCheckedChange={() => { toast.loading((user.isVerified ? "Unconfirm" : "Confirm") + "ing user"); setDisableButtons(true); mutateUsers.mutate({ id: user.id, current: user.isVerified ?? false, status: "isVerified" }) }}
+                                        />
+                                )}
                             </TableCell>
                         </TableRow>
                     )) :
@@ -120,7 +133,7 @@ function ModifyDepartment({ departments, user, refetch }: {
     });
     return <Dialog>
         <DialogTrigger asChild>
-            <Button variant="ghost"><CircleEllipsis /> </Button>
+            <Button variant="outline">{user.Department?.label ? user.Department?.label : <Plus />} </Button>
         </DialogTrigger>
         <DialogContent className="h-fit overflow-auto">
             <DialogHeader>

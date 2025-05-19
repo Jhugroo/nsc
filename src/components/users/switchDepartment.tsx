@@ -35,7 +35,7 @@ export default function SwitchDepartment({ departments, user, refetcher, CloseTr
     return (
         <>
             <div className="p-1">
-                <AutocompleteField fieldName="department" value={currentDepartment} onValueChange={(e) => setCurrentDepartment(e)} displayName="Switch Department" showLabel={true} options={departments.map(department => ({ value: department.id, label: department.label }))} />
+                <AutocompleteField fieldName="department" value={currentDepartment} onValueChange={(e) => setCurrentDepartment(e)} displayName="Department" showLabel={true} options={departments.map(department => ({ value: department.id, label: department.label }))} />
             </div>
             <div className="p-1">
                 <CloseTrigger asChild>
