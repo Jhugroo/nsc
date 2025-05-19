@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table"
 import toast from "react-hot-toast";
 import CreateDepartment from "./create";
+import { Delete, Pencil, PlusCircle } from "lucide-react";
 export default function ListDepartments() {
     const { data: departments, refetch, isLoading } = api.department.get.useQuery();
     const deleteDepartment = api.department.delete.useMutation({
@@ -40,9 +41,9 @@ export default function ListDepartments() {
                     <TableRow key={singleDepartment.id}>
                         <TableCell className="font-medium">{singleDepartment.code}</TableCell>
                         <TableCell className="font-medium">{singleDepartment.label}</TableCell>
-                        <TableCell className="font-medium">
+                        <TableCell className="font-medium space-x-2">
                             <CreateEditdepartmentDialog refetch={refetch} departmentId={singleDepartment.id} />
-                            <Button variant="destructive" onClick={() => { deleteDepartment.mutate(singleDepartment.id) }}>Delete</Button></TableCell>
+                            <Button variant="destructive" onClick={() => { deleteDepartment.mutate(singleDepartment.id) }}><Delete /></Button></TableCell>
                     </TableRow>
                 ))}
             </TableBody >
@@ -55,7 +56,7 @@ function CreateEditdepartmentDialog({ refetch, departmentId }: { departmentId?: 
     const typeString: string = departmentId ? "Update" : "Create new"
     return <Dialog>
         <DialogTrigger asChild>
-            <Button variant="default">{typeString} department</Button>
+            <Button variant="default" title={`${typeString} department page`}>{departmentId ? <Pencil /> : <PlusCircle />}</Button>
         </DialogTrigger>
         <DialogContent className="h-fit overflow-auto">
             <DialogHeader>
