@@ -1,5 +1,6 @@
 import EventTable from "@/components/event/eventTable";
 import InitiativesTable from "@/components/Initiatives/initiativesTable";
+import TeamTable from "@/components/team/teamTable";
 import {
     Table,
     TableBody,
@@ -19,8 +20,8 @@ export default function MiscellaneousPage() {
                         <InitiativesTable />
                     </TableCell>
                     <TableCell >
-                        <h2 className="text-3xl font-bold tracking-tight">Events</h2>
-                        <EventTable />
+                        <h2 className="text-3xl font-bold tracking-tight">Team</h2>
+                        <TeamTable />
                     </TableCell>
                 </TableRow>
             </TableBody >

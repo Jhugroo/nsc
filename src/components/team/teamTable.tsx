@@ -12,25 +12,25 @@ import toast from "react-hot-toast";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import CreateInitiative from "./create";
-import { Delete, type LucideIcon, Pencil, PlusCircle } from "lucide-react";
+import { Delete, Pencil, PlusCircle } from "lucide-react";
 import { Switch } from "../ui/switch";
-import { componentMap } from "./initiativesList";
+import { TeamImageUpload } from "./teamImageUpload";
 
 
 export default function TeamTable() {
-    const { data: initiatives, isLoading, refetch, isRefetching } = api.initiatives.get.useQuery()
-    const deleteInitiative = api.initiatives.delete.useMutation({
-        onSuccess: (deletedInitiative) => {
-            toast.success('initiative ' + deletedInitiative.title + ' deleted successfully')
+    const { data: team, isLoading, refetch, isRefetching } = api.team.get.useQuery()
+    const deleteMember = api.team.delete.useMutation({
+        onSuccess: (deletedMember) => {
+            toast.success('Member ' + deletedMember.name + ' deleted successfully')
             void refetch()
         },
         onError: () => {
-            toast.error("An error occurred while deleting the initiative, you may not have suffieicent authorization")
+            toast.error("An error occurred while team member you may not have suffieicent authorization")
         }
     });
-    const switchInitiativeActivation = api.initiatives.switchActive.useMutation({
+    const switchActiveMember = api.team.switchActive.useMutation({
         onSuccess: (switchedState) => {
-            toast.success(`initiative ${switchedState.title} ${switchedState.activated ? 'A' : 'Dea'}ctived successfully`)
+            toast.success(`Member ${switchedState.name} ${switchedState.activated ? 'A' : 'Dea'}ctived successfully`)
             void refetch()
         },
         onError: () => {
@@ -39,32 +39,34 @@ export default function TeamTable() {
     });
     return (
         <>
-            <CreateEditInitiativeDialog refetch={refetch} />
+            <CreateEditMemberDialog refetch={refetch} />
             <Table>
                 <TableCaption>A list of your team(currently shows initiatives)</TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead >Title</TableHead>
                         <TableHead >Usage</TableHead>
+                        <TableHead >Usage</TableHead>
                         <TableHead >Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {!isLoading && initiatives?.map((singleInitiative) => {
-                        const Icon: LucideIcon = componentMap[singleInitiative.icon as keyof typeof componentMap];
-                        return <TableRow key={singleInitiative.id} >
-                            <TableCell className="font-medium">{singleInitiative.title}</TableCell>
-                            <TableCell className="font-medium"><Icon className={`h-6 w-6 text-${singleInitiative.iconColor}`} /></TableCell>
+                    {!isLoading && team?.map((member) => {
+                        return <TableRow key={member.id} >
+                            <TableCell className="font-medium">{member.title}</TableCell>
                             <TableCell className="font-medium">
                                 <Switch
-                                    disabled={switchInitiativeActivation.isLoading || isRefetching}
-                                    checked={singleInitiative.activated}
-                                    onCheckedChange={() => { switchInitiativeActivation.mutate({ id: singleInitiative.id, activated: singleInitiative.activated }) }}
+                                    disabled={switchActiveMember.isLoading || isRefetching}
+                                    checked={member.activated}
+                                    onCheckedChange={() => { switchActiveMember.mutate({ id: member.id, activated: member.activated }) }}
                                 />
                             </TableCell>
+                            <TableCell className="font-medium">
+                                <TeamImageUpload id={member.id} />
+                            </TableCell>
                             <TableCell className="font-medium space-x-2">
-                                <CreateEditInitiativeDialog refetch={refetch} initiativeId={singleInitiative.id} />
-                                <Button title="Delete initiative" variant="destructive" onClick={() => { deleteInitiative.mutate(singleInitiative.id) }}><Delete /></Button>
+                                <CreateEditMemberDialog refetch={refetch} memberId={member.id} />
+                                <Button title="Delete initiative" variant="destructive" onClick={() => { deleteMember.mutate(member.id) }}><Delete /></Button>
                             </TableCell>
                         </TableRow>
                     }
@@ -77,22 +79,22 @@ export default function TeamTable() {
 
 
 
-function CreateEditInitiativeDialog({ refetch, initiativeId }: {
-    initiativeId?: string,
+function CreateEditMemberDialog({ refetch, memberId }: {
+    memberId?: string,
     refetch?: () => void
 }) {
-    const typeString: string = initiativeId ? "Update" : "Create new"
+    const typeString: string = memberId ? "Update" : "Create new"
     return <Dialog>
         <DialogTrigger asChild>
-            <Button variant="default" title={`${typeString} initiative`}>        {initiativeId ? <Pencil /> : <PlusCircle />}</Button>
+            <Button variant="default" title={`${typeString} member`}>        {memberId ? <Pencil /> : <PlusCircle />}</Button>
         </DialogTrigger>
         <DialogContent className="min-w-fit overflow-auto">
             <DialogHeader>
                 <DialogTitle className="text-left">
-                    {typeString} initiative
+                    {typeString} member
                 </DialogTitle>
             </DialogHeader>
-            <CreateInitiative refetcher={refetch} id={initiativeId} CloseTrigger={DialogTrigger} />
+            <CreateInitiative refetcher={refetch} id={memberId} CloseTrigger={DialogTrigger} />
         </DialogContent>
     </Dialog>
 }

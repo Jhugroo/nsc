@@ -8,16 +8,9 @@ import { api } from "@/utils/api"
 import { Badge } from "../ui/badge";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
-type imageType = {
-    id: string;
-    key: string;
-    name: string;
-    url: string;
-    type: string | null;
-    eventId: string | null;
-    createdById: string;
-}
+
 import { BookImage } from "lucide-react";
+import { type imageType } from "../type";
 export function EventUploadImage({ id }: {
     id: string,
 }) {
