@@ -17,6 +17,7 @@ import { dateFormatterDisplay } from "@/lib/utils";
 import { useDepartmentsStore } from "@/state/department";
 import { useEffect } from "react";
 import { Delete, Pencil, PlusCircle } from "lucide-react";
+import { Switch } from "../ui/switch";
 export default function EventTable() {
     const { data: event, isLoading, refetch } = api.event.get.useQuery()
     const { data: departments } = api.department.get.useQuery()
@@ -36,6 +37,15 @@ export default function EventTable() {
             toast.error("An error occurred while deleting the event")
         }
     });
+    const switchEventActivation = api.event.switchActive.useMutation({
+        onSuccess: (switchedState) => {
+            toast.success(`department ${switchedState.title} ${switchedState.activated ? 'A' : 'Dea'}ctived successfully`)
+            void refetch()
+        },
+        onError: () => {
+            toast.error("An error occurred while switching the department, you may not have sufficient authority")
+        }
+    });
     return (
         <>
             <CreateEditEventDialog refetch={refetch} />
@@ -45,6 +55,7 @@ export default function EventTable() {
                     <TableRow>
                         <TableHead >Title</TableHead>
                         <TableHead >Event Date</TableHead>
+                        <TableHead >Activated</TableHead>
                         <TableHead >Images</TableHead>
                         <TableHead >Actions</TableHead>
                     </TableRow>
@@ -54,6 +65,11 @@ export default function EventTable() {
                         <TableRow key={singleEvent.id}>
                             <TableCell className="font-medium">{singleEvent.title}</TableCell>
                             <TableCell className="font-medium">{dateFormatterDisplay(singleEvent.eventDate)}</TableCell>
+                            <Switch
+                                disabled={switchEventActivation.isLoading}
+                                checked={singleEvent.activated ?? false}
+                                onCheckedChange={() => { switchEventActivation.mutate({ id: singleEvent.id, activated: singleEvent.activated ?? false }) }}
+                            />
                             <TableCell className="font-medium">
                                 <EventUploadImage id={singleEvent.id} />
                             </TableCell>

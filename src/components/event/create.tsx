@@ -20,6 +20,7 @@ type createEventType = {
     description: string;
     link: string
     departmentId?: string;
+    activated: boolean
 }
 
 const initialiseEvent: createEventType = {
@@ -28,7 +29,8 @@ const initialiseEvent: createEventType = {
     eventDate: (new Date()).getTime(),
     location: '',
     description: '',
-    link: ''
+    link: '',
+    activated: true,
 };
 export default function CreateEvent({ id, refetcher, CloseTrigger }: {
     id?: string, refetcher?: () => void,
@@ -46,7 +48,8 @@ export default function CreateEvent({ id, refetcher, CloseTrigger }: {
                 location: updateEventQuery.location,
                 description: updateEventQuery.description,
                 link: updateEventQuery.link ?? '',
-                departmentId: updateEventQuery.departmentId ?? undefined
+                departmentId: updateEventQuery.departmentId ?? undefined,
+                activated: updateEventQuery.activated ?? false,
             })
         }
     }, [updateEventQuery, id])
