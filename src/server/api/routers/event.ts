@@ -31,6 +31,7 @@ export const eventRouter = createTRPCRouter({
       return await ctx.db.event.findMany({
         where: {
           departmentId: input?.departmentId,
+          activated: true,
           ...dateConstraint,
         },
         take: !input ? 50 : input.take > 50 ? 50 : input.take,
@@ -51,6 +52,7 @@ export const eventRouter = createTRPCRouter({
       z.object({
         title: z.string().min(1),
         eventDate: z.number(),
+        activated: z.boolean(),
         description: z.string(),
         location: z.string(),
         link: z.string().optional(),
@@ -106,13 +108,26 @@ export const eventRouter = createTRPCRouter({
         orderBy: { eventDate: "desc" },
       });
     }),
-
+  switchActive: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        activated: z.boolean(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.event.update({
+        where: { id: input.id },
+        data: { activated: !input.activated },
+      });
+    }),
   updateById: protectedProcedure
     .input(
       z.object({
         id: z.string(),
         title: z.string().min(1),
         eventDate: z.number(),
+        activated: z.boolean(),
         description: z.string(),
         location: z.string(),
         link: z.string().optional(),
