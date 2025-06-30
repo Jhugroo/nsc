@@ -21,7 +21,10 @@ export default function BannerSectionHomePage() {
                     National Student Council of Mauritius
                 </h1>
                 <p className="mx-auto max-w-[700px] text-white md:text-xl">
-                    Empowering students across Mauritius to lead, innovate, and shape the future of education
+                    <i>Vox Studentium, Vis Futuri</i><br />
+                    <span className="text-sm text-gray-200"> 
+                        “The Voice of our Students, the Future’s Force”
+                    </span>
                 </p>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
